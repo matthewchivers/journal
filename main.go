@@ -2,8 +2,14 @@ package main
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/matthewchivers/journal/cmd"
 )
 
 func main() {
-	fmt.Println("Hello, Journal!")
+	if err := cmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

@@ -6,16 +6,24 @@ import (
 	"path/filepath"
 
 	"github.com/matthewchivers/journal/config"
+	"github.com/matthewchivers/journal/fileops"
 	"github.com/spf13/cobra"
 )
 
-var cfg = &config.Config{}
+var (
+	cfg     = &config.Config{}
+	docType string
+)
 
 var rootCmd = &cobra.Command{
 	Use:   "journal",
 	Short: "Journal is a simple CLI journaling application",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Hello World")
+		templateName := cfg.DefaultDocType
+		if docType != "" {
+			templateName = docType
+		}
+		fileops.CreateNewFile(cfg, templateName)
 	},
 }
 
@@ -34,7 +42,7 @@ func init() {
 		os.Exit(1)
 	}
 
-	defaultConfigPath := filepath.Join(home, ".journal.yaml")
+	defaultConfigPath := filepath.Join(home, ".journal", "config.yaml")
 
 	rootCmd.PersistentFlags().StringP("config", "c", defaultConfigPath, "path to config file (default: $HOME/.journal.yaml)")
 
@@ -44,4 +52,6 @@ func init() {
 	} else {
 		cfg = config
 	}
+
+	rootCmd.PersistentFlags().StringP("template", "t", docType, "document template to use (default: defaultDocType)")
 }

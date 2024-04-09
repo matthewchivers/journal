@@ -9,8 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
-
 var cfg = &config.Config{}
 
 var rootCmd = &cobra.Command{
@@ -38,7 +36,7 @@ func init() {
 
 	defaultConfigPath := filepath.Join(home, ".journal.yaml")
 
-	rootCmd.PersistentFlags().StringP("config", "c", defaultConfigPath, "config file (default is $HOME/.journal.yaml)")
+	rootCmd.PersistentFlags().StringP("config", "c", defaultConfigPath, "path to config file (default: $HOME/.journal.yaml)")
 
 	if config, err := config.LoadConfig(defaultConfigPath); err != nil {
 		fmt.Println("Unable to load config file", err)

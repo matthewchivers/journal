@@ -8,13 +8,34 @@ import (
 )
 
 type Config struct {
-	JournalDir string     `yaml:"journalDir"`
-	Documents  []Document `yaml:"documents"`
+	DefaultDocType string         `yaml:"defaultDocType"`
+	DocumentTypes  []DocumentType `yaml:"documentTypes"`
+	Paths          Paths          `yaml:"paths"`
+	UserSettings   UserSettings   `yaml:"userSettings,omitempty"`
 }
 
-type Document struct {
-	Name     string `yaml:"name"`
-	Template string `yaml:"template"`
+type DocumentType struct {
+	Name         string   `yaml:"name"`
+	Schedule     Schedule `yaml:"schedule,omitempty"`
+	TemplatePath string   `yaml:"templatePath"`
+}
+
+type Schedule struct {
+	Frequency string `yaml:"frequency"`
+	Interval  int    `yaml:"interval,omitempty"`
+	Days      []int  `yaml:"days,omitempty"`
+	Dates     []int  `yaml:"dates,omitempty"`
+	Weeks     []int  `yaml:"weeks,omitempty"`
+	Months    []int  `yaml:"months,omitempty"`
+}
+
+type Paths struct {
+	TemplatesDir string `yaml:"templatesDir,omitempty"`
+	JournalDir   string `yaml:"journalDir"`
+}
+
+type UserSettings struct {
+	Timezone string `yaml:"timezone,omitempty"`
 }
 
 func LoadConfig(configPath string) (*Config, error) {

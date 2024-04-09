@@ -12,6 +12,7 @@
 *_bin_windows_amd64
 *_bin_darwin_amd64
 *_bin_darwin_arm64
+**/__debug_bin*
 
 # Test binary, built with `go test -c`
 *.test

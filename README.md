@@ -29,22 +29,23 @@ Define document schemas and templates in a YAML configuration file, offering a h
 
 Example `journal-config.yaml`
 ``` yaml
-    defaultDocType: status
-    documentTypes:
-      - name: status
-        schedule:
-          frequency: [daily/weekly/monthly/annually]
-          interval: [1-99]
-          days: [1-7]
-          dates: [1-31]
-          weeks: [1-4]
-          months: [1-12] 
-        templatePath: status.md
-    paths:
-      templatesDir: ~/.journal/templates/
-      journalDir: ~/journal/
-    userSettings:
-      timezone: 'Europe/London'
+defaultDocType: status
+documentTypes:
+  - name: status
+    schedule:
+      frequency: [daily/weekly/monthly/annually]
+      interval: [1-99]
+      days: [1-7]
+      dates: [1-31]
+      weeks: [1-4]
+      months: [1-12] 
+    templatePath: status.md
+paths:
+  templatesDir: ~/.journal/templates/
+  journalDir: ~/journal/
+  journalPathPattern: "{{.Year}}/{{.Month}}/{{.Day}}/{{.TemplateName}}"
+userSettings:
+  timezone: 'Europe/London'
   ```
 
 

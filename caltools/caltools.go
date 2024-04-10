@@ -22,3 +22,10 @@ func WeekOfMonth(t time.Time) int {
 
 	return week
 }
+
+// WeekCommencing calculates the date of the Monday of the week containing the given date.
+func WeekCommencing(t time.Time) time.Time {
+	offset := (int(t.Weekday()) + 6) % 7
+	weekCommencing := t.AddDate(0, 0, offset*-1)
+	return weekCommencing
+}

@@ -20,20 +20,20 @@ func TestLoadConfig(t *testing.T) {
 defaultDocType: "report"
 documentTypes:
   - name: "report"
-    templatePath: "templates/report.tmpl"
+    documentNestingPath: "templates/report.tmpl"
 paths:
-  journalDir: "journals"
+    journalBaseDir: "journals"
 `,
 			want: &Config{
 				DefaultDocType: "report",
 				DocumentTypes: []DocumentType{
 					{
-						Name:         "report",
-						TemplatePath: "templates/report.tmpl",
+						Name:                "report",
+						DocumentNestingPath: "templates/report.tmpl",
 					},
 				},
 				Paths: Paths{
-					JournalDir: "journals",
+					JournalBaseDir: "journals",
 				},
 			},
 			wantErr: false,
@@ -45,14 +45,14 @@ defaultDocType: "log"
 documentTypes:
   - name: "log"
     schedule:
-      frequency: "weekly"
-      days: [1,3,5]
-    templatePath: "templates/log.tmpl"
+        frequency: "weekly"
+        days: [1,3,5]
+    documentNestingPath: "templates/log.tmpl"
 paths:
-  templatesDir: "templates"
-  journalDir: "journals"
+    templatesDir: "templates"
+    journalBaseDir: "journals"
 userSettings:
-  timezone: "Europe/London"
+    timezone: "Europe/London"
 `,
 			want: &Config{
 				DefaultDocType: "log",
@@ -63,12 +63,12 @@ userSettings:
 							Frequency: "weekly",
 							Days:      []int{1, 3, 5},
 						},
-						TemplatePath: "templates/log.tmpl",
+						DocumentNestingPath: "templates/log.tmpl",
 					},
 				},
 				Paths: Paths{
-					TemplatesDir: "templates",
-					JournalDir:   "journals",
+					TemplatesDir:   "templates",
+					JournalBaseDir: "journals",
 				},
 				UserSettings: UserSettings{
 					Timezone: "Europe/London",
@@ -115,7 +115,16 @@ userSettings:
 
 			got, err := LoadConfig(tempFile.Name())
 
-			assert.Equal(t, tt.wantErr, err != nil)
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			} else {
+				assert.NoError(t, err)
+				if err != nil {
+					return
+				}
+			}
+
 			assert.Equal(t, tt.want, got)
 		})
 	}

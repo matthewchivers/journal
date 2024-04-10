@@ -8,16 +8,17 @@ import (
 )
 
 type Config struct {
-	DefaultDocType string         `yaml:"defaultDocType"`
-	DocumentTypes  []DocumentType `yaml:"documentTypes"`
-	Paths          Paths          `yaml:"paths"`
-	UserSettings   UserSettings   `yaml:"userSettings,omitempty"`
+	DefaultDocType      string         `yaml:"defaultDocType"`
+	DocumentTypes       []DocumentType `yaml:"documentTypes"`
+	Paths               Paths          `yaml:"paths"`
+	UserSettings        UserSettings   `yaml:"userSettings,omitempty"`
+	DocumentNestingPath string         `yaml:"documentNestingPath,omitempty"`
 }
 
 type DocumentType struct {
-	Name         string   `yaml:"name"`
-	Schedule     Schedule `yaml:"schedule,omitempty"`
-	TemplatePath string   `yaml:"templatePath"`
+	Name                string   `yaml:"name"`
+	Schedule            Schedule `yaml:"schedule,omitempty"`
+	DocumentNestingPath string   `yaml:"documentNestingPath,omitempty"`
 }
 
 type Schedule struct {
@@ -30,8 +31,8 @@ type Schedule struct {
 }
 
 type Paths struct {
-	TemplatesDir string `yaml:"templatesDir,omitempty"`
-	JournalDir   string `yaml:"journalDir"`
+	TemplatesDir   string `yaml:"templatesDir,omitempty"`
+	JournalBaseDir string `yaml:"journalBaseDir"`
 }
 
 type UserSettings struct {

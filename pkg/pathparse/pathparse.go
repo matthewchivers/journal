@@ -1,4 +1,4 @@
-package fileops
+package pathparse
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/matthewchivers/journal/caltools"
+	"github.com/matthewchivers/journal/pkg/caltools"
 )
 
 // ConstructJournalPath creates a new path for a journal entry based on a path template

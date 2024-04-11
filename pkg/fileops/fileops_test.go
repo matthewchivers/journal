@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matthewchivers/journal/config"
+	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
 

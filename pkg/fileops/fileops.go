@@ -5,13 +5,15 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/matthewchivers/journal/config"
+	"github.com/matthewchivers/journal/pkg/config"
+	"github.com/matthewchivers/journal/pkg/pathparse"
 )
 
+// CreateNewFile creates a new file based on the provided configuration and document template name
 func CreateNewFile(cfg *config.Config, docTemplateName string) error {
 	baseDirectory := cfg.Paths.JournalBaseDir
 
-	nestedPath, err := ConstructPath(cfg.DocumentNestingPath, docTemplateName)
+	nestedPath, err := pathparse.ConstructPath(cfg.DocumentNestingPath, docTemplateName)
 	if err != nil {
 		return fmt.Errorf("failed to construct nested path: %w", err)
 	}

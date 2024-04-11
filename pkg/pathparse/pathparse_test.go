@@ -1,10 +1,10 @@
-package fileops
+package pathparse
 
 import (
 	"testing"
 	"time"
 
-	"github.com/matthewchivers/journal/caltools"
+	"github.com/matthewchivers/journal/pkg/caltools"
 	"github.com/stretchr/testify/assert"
 )
 

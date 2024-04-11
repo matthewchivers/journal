@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/matthewchivers/journal/config"
-	"github.com/matthewchivers/journal/fileops"
+	"github.com/matthewchivers/journal/pkg/config"
+	"github.com/matthewchivers/journal/pkg/fileops"
 	"github.com/spf13/cobra"
 )
 
@@ -23,6 +23,7 @@ var rootCmd = &cobra.Command{
 		if docType != "" {
 			templateName = docType
 		}
+		fmt.Printf("Creating new journal entry using template: %s\n", templateName)
 		fileops.CreateNewFile(cfg, templateName)
 	},
 }
@@ -53,5 +54,5 @@ func init() {
 		cfg = config
 	}
 
-	rootCmd.PersistentFlags().StringP("template", "t", docType, "document template to use (default: defaultDocType)")
+	rootCmd.PersistentFlags().StringVarP(&docType, "template", "t", "", "document template to use")
 }

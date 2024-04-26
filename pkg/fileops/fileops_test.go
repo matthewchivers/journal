@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/matthewchivers/journal/pkg/config"
+	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,9 +20,9 @@ func MockConfig() *config.Config {
 	}
 	return &config.Config{
 		Paths: config.Paths{
-			JournalBaseDir: tempDir,
+			JournalBaseDir:     tempDir,
+			NestedPathTemplate: "{{.Year}}/{{.Month}}/{{.Day}}",
 		},
-		DocumentNestingPath: "{{.Year}}/{{.Month}}/{{.Day}}",
 	}
 }
 
@@ -33,7 +34,8 @@ func TestCreateNewFile(t *testing.T) {
 	month := time.Now().Format("01")
 	day := time.Now().Format("02")
 
-	// Define test cases
+	// Probably doesn't need to be a table test, but this works in the name of speed / getting an MVP.
+	// Doesn't test failure to create a file, as that would border on testing the os package
 	tests := []struct {
 		name             string
 		docTemplateName  string
@@ -55,7 +57,12 @@ func TestCreateNewFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Execute the function under test
-			err := CreateNewFile(cfg, tt.docTemplateName)
+			fmt.Printf("Creating new journal entry using template: %s\n", tt.docTemplateName)
+			fullPath, pathErr := paths.ConstructFullPath(cfg.Paths.JournalBaseDir, cfg.Paths.NestedPathTemplate, tt.docTemplateName)
+			if pathErr != nil {
+				panic(pathErr)
+			}
+			err := CreateNewFile(fullPath)
 
 			// Assert error handling
 			if tt.expectedError {

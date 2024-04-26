@@ -20,20 +20,20 @@ func TestLoadConfig(t *testing.T) {
 defaultDocType: "report"
 documentTypes:
   - name: "report"
-    documentNestingPath: "templates/report.tmpl"
-paths:
-    journalBaseDir: "journals"
+  paths:
+	journalBaseDir: "journals"
+  	documentNestingPath: "templates/report.tmpl"
 `,
 			want: &Config{
 				DefaultDocType: "report",
 				DocumentTypes: []DocumentType{
 					{
-						Name:                "report",
-						DocumentNestingPath: "templates/report.tmpl",
+						Name: "report",
 					},
 				},
 				Paths: Paths{
-					JournalBaseDir: "journals",
+					JournalBaseDir:     "journals",
+					NestedPathTemplate: "templates/report.tmpl",
 				},
 			},
 			wantErr: false,
@@ -47,10 +47,10 @@ documentTypes:
     schedule:
         frequency: "weekly"
         days: [1,3,5]
-    documentNestingPath: "templates/log.tmpl"
 paths:
-    templatesDir: "templates"
-    journalBaseDir: "journals"
+	templatesDir: "templates"
+	journalBaseDir: "journals"
+	nestedPathTemplate: "templates/log.tmpl"
 userSettings:
     timezone: "Europe/London"
 `,
@@ -63,12 +63,12 @@ userSettings:
 							Frequency: "weekly",
 							Days:      []int{1, 3, 5},
 						},
-						DocumentNestingPath: "templates/log.tmpl",
 					},
 				},
 				Paths: Paths{
-					TemplatesDir:   "templates",
-					JournalBaseDir: "journals",
+					TemplatesDir:       "templates",
+					JournalBaseDir:     "journals",
+					NestedPathTemplate: "templates/log.tmpl",
 				},
 				UserSettings: UserSettings{
 					Timezone: "Europe/London",

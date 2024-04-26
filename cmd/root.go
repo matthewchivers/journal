@@ -7,6 +7,7 @@ import (
 
 	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/matthewchivers/journal/pkg/fileops"
+	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +25,11 @@ var rootCmd = &cobra.Command{
 			templateName = docType
 		}
 		fmt.Printf("Creating new journal entry using template: %s\n", templateName)
-		fileops.CreateNewFile(cfg, templateName)
+		fullPath, err := paths.ConstructFullPath(cfg.Paths.JournalBaseDir, cfg.Paths.NestedPathTemplate, templateName)
+		if err != nil {
+			panic(err)
+		}
+		fileops.CreateNewFile(fullPath)
 	},
 }
 

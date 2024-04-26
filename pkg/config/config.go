@@ -10,20 +10,24 @@ import (
 
 // Config contains the configuration for the application
 type Config struct {
-	DefaultDocType string         `yaml:"defaultDocType"`
-	DocumentTypes  []DocumentType `yaml:"documentTypes"`
-	Paths          Paths          `yaml:"paths"`
-	UserSettings   UserSettings   `yaml:"userSettings,omitempty"`
+	DefaultFileType string       `yaml:"defaultFileType"`
+	FileTypes       []FileType   `yaml:"fileTypes,omitempty"`
+	Paths           Paths        `yaml:"paths"`
+	UserSettings    UserSettings `yaml:"userSettings,omitempty"`
+	DefaultFileExt  string       `yaml:"defaultFileExt,omitempty"`
 }
 
-// DocumentType contains the configuration for a document type
-type DocumentType struct {
-	Name               string   `yaml:"name"`
-	Schedule           Schedule `yaml:"schedule,omitempty"`
-	NestedPathTemplate string   `yaml:"nestedPathTemplate,omitempty"`
+// FileType contains the configuration for a file type
+type FileType struct {
+	Name             string   `yaml:"name"`
+	FileExtension    string   `yaml:"fileExtension,omitempty"`
+	Schedule         Schedule `yaml:"schedule,omitempty"`
+	SubDirPattern    string   `yaml:"SubDirPattern,omitempty"`
+	FileNamePattern  string   `yaml:"fileNamePattern,omitempty"`
+	CustomDirPattern string   `yaml:"customDirPattern,omitempty"`
 }
 
-// Schedule contains the schedule for a document type
+// Schedule contains the schedule for a file type
 type Schedule struct {
 	Frequency string `yaml:"frequency"`
 	Interval  int    `yaml:"interval,omitempty"`
@@ -35,9 +39,9 @@ type Schedule struct {
 
 // Paths contains the paths to directories used by the application
 type Paths struct {
-	TemplatesDir       string `yaml:"templatesDir,omitempty"`
-	JournalBaseDir     string `yaml:"journalBaseDir"`
-	NestedPathTemplate string `yaml:"nestedPathTemplate,omitempty"`
+	TemplatesDir string `yaml:"templatesDir,omitempty"`
+	BaseDir      string `yaml:"baseDir"`
+	DirPattern   string `yaml:"dirPattern,omitempty"`
 }
 
 // UserSettings contains user-specific settings

@@ -13,13 +13,13 @@ var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new journal entry",
 	Run: func(cmd *cobra.Command, args []string) {
-		templateName := cfg.DefaultDocType
+		templateName := cfg.DefaultFileType
 		if docType != "" {
 			templateName = docType
 		}
 		fmt.Printf("Creating new journal entry using template: %s\n", templateName)
 
-		fullPath, err := paths.ConstructFullPath(cfg.Paths.JournalBaseDir, cfg.Paths.NestedPathTemplate, templateName)
+		fullPath, err := paths.ConstructFullPath(cfg.Paths.BaseDir, cfg.Paths.DirPattern, templateName)
 		if err != nil {
 			fmt.Println("Error constructing file path:", err)
 			os.Exit(1)

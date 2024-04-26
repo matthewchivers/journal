@@ -20,8 +20,8 @@ func MockConfig() *config.Config {
 	}
 	return &config.Config{
 		Paths: config.Paths{
-			JournalBaseDir:     tempDir,
-			NestedPathTemplate: "{{.Year}}/{{.Month}}/{{.Day}}",
+			BaseDir:    tempDir,
+			DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 		},
 	}
 }
@@ -51,14 +51,14 @@ func TestCreateNewFile(t *testing.T) {
 
 	defer func() {
 		// Clean up the file system
-		os.RemoveAll(cfg.Paths.JournalBaseDir)
+		os.RemoveAll(cfg.Paths.BaseDir)
 	}()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Execute the function under test
 			fmt.Printf("Creating new journal entry using template: %s\n", tt.docTemplateName)
-			fullPath, pathErr := paths.ConstructFullPath(cfg.Paths.JournalBaseDir, cfg.Paths.NestedPathTemplate, tt.docTemplateName)
+			fullPath, pathErr := paths.ConstructFullPath(cfg.Paths.BaseDir, cfg.Paths.DirPattern, tt.docTemplateName)
 			if pathErr != nil {
 				panic(pathErr)
 			}
@@ -70,7 +70,7 @@ func TestCreateNewFile(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.expectedErrorMsg)
 			} else {
 				assert.NoError(t, err)
-				expectedPath := filepath.Join(cfg.Paths.JournalBaseDir, year, month, day, fmt.Sprintf("%s.md", tt.docTemplateName))
+				expectedPath := filepath.Join(cfg.Paths.BaseDir, year, month, day, fmt.Sprintf("%s.md", tt.docTemplateName))
 				stats, err := os.Stat(expectedPath)
 				assert.NoError(t, err, "file should have been created successfully")
 				fmt.Printf("Stats: %+v\n", stats)

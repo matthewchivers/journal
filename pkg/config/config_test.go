@@ -25,15 +25,15 @@ documentTypes:
   	documentNestingPath: "templates/report.tmpl"
 `,
 			want: &Config{
-				DefaultDocType: "report",
-				DocumentTypes: []DocumentType{
+				DefaultFileType: "report",
+				FileTypes: []FileType{
 					{
 						Name: "report",
 					},
 				},
 				Paths: Paths{
-					JournalBaseDir:     "journals",
-					NestedPathTemplate: "templates/report.tmpl",
+					BaseDir:    "journals",
+					DirPattern: "templates/report.tmpl",
 				},
 			},
 			wantErr: false,
@@ -55,8 +55,8 @@ userSettings:
     timezone: "Europe/London"
 `,
 			want: &Config{
-				DefaultDocType: "log",
-				DocumentTypes: []DocumentType{
+				DefaultFileType: "log",
+				FileTypes: []FileType{
 					{
 						Name: "log",
 						Schedule: Schedule{
@@ -66,9 +66,9 @@ userSettings:
 					},
 				},
 				Paths: Paths{
-					TemplatesDir:       "templates",
-					JournalBaseDir:     "journals",
-					NestedPathTemplate: "templates/log.tmpl",
+					TemplatesDir: "templates",
+					BaseDir:      "journals",
+					DirPattern:   "templates/log.tmpl",
 				},
 				UserSettings: UserSettings{
 					Timezone: "Europe/London",

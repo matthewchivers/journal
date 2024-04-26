@@ -6,14 +6,12 @@ import (
 	"path/filepath"
 
 	"github.com/matthewchivers/journal/pkg/config"
-	"github.com/matthewchivers/journal/pkg/fileops"
-	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/spf13/cobra"
 )
 
 var (
 	cfgPath string
-	cfg     = &config.Config{}
+	cfg     *config.Config
 	docType string
 )
 
@@ -29,16 +27,7 @@ var rootCmd = &cobra.Command{
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		templateName := cfg.DefaultDocType
-		if docType != "" {
-			templateName = docType
-		}
-		fmt.Printf("Creating new journal entry using template: %s\n", templateName)
-		fullPath, err := paths.ConstructFullPath(cfg.Paths.JournalBaseDir, cfg.Paths.NestedPathTemplate, templateName)
-		if err != nil {
-			panic(err)
-		}
-		fileops.CreateNewFile(fullPath)
+		fmt.Println("Welcome to Journal CLI. Use 'journal --help' to see available commands.")
 	},
 }
 
@@ -59,5 +48,4 @@ func init() {
 	defaultConfigPath := filepath.Join(home, ".journal", "config.yaml")
 
 	rootCmd.PersistentFlags().StringVarP(&cfgPath, "config", "c", defaultConfigPath, "path to config file (default: $HOME/.journal.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&docType, "template", "t", "", "document template to use")
 }

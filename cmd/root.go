@@ -45,5 +45,5 @@ func init() {
 		os.Exit(1)
 	}
 
-	rootCmd.PersistentFlags().StringVarP(&cfgPath, "config", "c", defaultConfigPath, "path to config file (default: $HOME/.journal.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&cfgPath, "config", "c", defaultConfigPath, "path to config file")
 }

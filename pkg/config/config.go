@@ -3,6 +3,7 @@ package config
 import (
 	"io"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
@@ -62,4 +63,14 @@ func LoadConfig(configPath string) (*Config, error) {
 	}
 
 	return config, nil
+}
+
+// GetDefaultConfigPath returns the default path to the configuration file
+func GetDefaultConfigPath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	defaultConfigPath := filepath.Join(home, ".journal", "config.yaml")
+	return defaultConfigPath, nil
 }

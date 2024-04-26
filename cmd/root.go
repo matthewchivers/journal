@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/spf13/cobra"
@@ -40,12 +39,11 @@ func Execute() error {
 }
 
 func init() {
-	home, err := os.UserHomeDir()
+	defaultConfigPath, err := config.GetDefaultConfigPath()
 	if err != nil {
-		fmt.Println("Unable to determine user home directory", err)
+		fmt.Println("Error getting default config path:", err)
 		os.Exit(1)
 	}
-	defaultConfigPath := filepath.Join(home, ".journal", "config.yaml")
 
 	rootCmd.PersistentFlags().StringVarP(&cfgPath, "config", "c", defaultConfigPath, "path to config file (default: $HOME/.journal.yaml)")
 }

@@ -1,4 +1,4 @@
-package pathparse
+package paths
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestConstructPath(t *testing.T) {
+func TestParsePathTemplate(t *testing.T) {
 	date := time.Now()
 	weekCommencing := caltools.WeekCommencing(date)
 	currentWeek := caltools.WeekOfMonth(date)
@@ -80,7 +80,7 @@ func TestConstructPath(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ConstructPath(tt.pathTemplate, tt.docTemplateName)
+			got, err := ParsePathTemplate(tt.pathTemplate, tt.docTemplateName)
 			if tt.wantErr {
 				assert.Error(t, err)
 				return

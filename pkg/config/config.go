@@ -7,20 +7,22 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Config contains the configuration for the application
 type Config struct {
-	DefaultDocType      string         `yaml:"defaultDocType"`
-	DocumentTypes       []DocumentType `yaml:"documentTypes"`
-	Paths               Paths          `yaml:"paths"`
-	UserSettings        UserSettings   `yaml:"userSettings,omitempty"`
-	DocumentNestingPath string         `yaml:"documentNestingPath,omitempty"`
+	DefaultDocType string         `yaml:"defaultDocType"`
+	DocumentTypes  []DocumentType `yaml:"documentTypes"`
+	Paths          Paths          `yaml:"paths"`
+	UserSettings   UserSettings   `yaml:"userSettings,omitempty"`
 }
 
+// DocumentType contains the configuration for a document type
 type DocumentType struct {
-	Name                string   `yaml:"name"`
-	Schedule            Schedule `yaml:"schedule,omitempty"`
-	DocumentNestingPath string   `yaml:"documentNestingPath,omitempty"`
+	Name               string   `yaml:"name"`
+	Schedule           Schedule `yaml:"schedule,omitempty"`
+	NestedPathTemplate string   `yaml:"nestedPathTemplate,omitempty"`
 }
 
+// Schedule contains the schedule for a document type
 type Schedule struct {
 	Frequency string `yaml:"frequency"`
 	Interval  int    `yaml:"interval,omitempty"`
@@ -30,15 +32,19 @@ type Schedule struct {
 	Months    []int  `yaml:"months,omitempty"`
 }
 
+// Paths contains the paths to directories used by the application
 type Paths struct {
-	TemplatesDir   string `yaml:"templatesDir,omitempty"`
-	JournalBaseDir string `yaml:"journalBaseDir"`
+	TemplatesDir       string `yaml:"templatesDir,omitempty"`
+	JournalBaseDir     string `yaml:"journalBaseDir"`
+	NestedPathTemplate string `yaml:"nestedPathTemplate,omitempty"`
 }
 
+// UserSettings contains user-specific settings
 type UserSettings struct {
 	Timezone string `yaml:"timezone,omitempty"`
 }
 
+// LoadConfig loads the configuration from a file
 func LoadConfig(configPath string) (*Config, error) {
 	config := &Config{}
 

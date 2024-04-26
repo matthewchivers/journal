@@ -1,7 +1,9 @@
-package pathparse
+package paths
 
 import (
 	"bytes"
+	"fmt"
+	"path/filepath"
 	"strings"
 	"text/template"
 	"time"
@@ -9,8 +11,8 @@ import (
 	"github.com/matthewchivers/journal/pkg/caltools"
 )
 
-// ConstructJournalPath creates a new path for a journal entry based on a path template
-func ConstructPath(pathTemplate, docTempName string) (string, error) {
+// ParsePathTemplate creates a new path for a journal entry based on a path template
+func ParsePathTemplate(nestedPathTemplate string, docTempName string) (string, error) {
 	data := struct {
 		Year           string
 		Month          string
@@ -32,14 +34,14 @@ func ConstructPath(pathTemplate, docTempName string) (string, error) {
 	}
 
 	// WeekCommencing directories should nest in the same Year/Month as the commencing date)
-	if strings.Contains(pathTemplate, "{{.WeekCommencing}}") {
+	if strings.Contains(nestedPathTemplate, "{{.WeekCommencing}}") {
 		wc := caltools.WeekCommencing(time.Now())
 		data.Year = wc.Format("2006")
 		data.Month = wc.Format("01")
 		data.WeekNumber = string(rune(caltools.WeekOfMonth(wc)))
 	}
 
-	t, err := template.New("path").Parse(pathTemplate)
+	t, err := template.New("path").Parse(nestedPathTemplate)
 	if err != nil {
 		return "", err
 	}
@@ -53,4 +55,16 @@ func ConstructPath(pathTemplate, docTempName string) (string, error) {
 	pathString := path.String()
 
 	return pathString, nil
+}
+
+// ConstructFullPath constructs the full path for the new file
+func ConstructFullPath(baseDir, nestedPathTemplate string, docTemplateName string) (string, error) {
+	nestedPath, err := ParsePathTemplate(nestedPathTemplate, docTemplateName)
+	if err != nil {
+		return "", fmt.Errorf("failed to construct nested path: %w", err)
+	}
+
+	fileName := fmt.Sprintf("%s.md", docTemplateName)
+	fullPath := filepath.Join(baseDir, nestedPath, fileName)
+	return fullPath, nil
 }

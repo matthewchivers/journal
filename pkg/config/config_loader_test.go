@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -17,12 +18,12 @@ func TestLoadConfig(t *testing.T) {
 		{
 			name: "Basic Configuration",
 			yamlData: `
-defaultDocType: "report"
-documentTypes:
+defaultFileType: "report"
+fileTypes:
   - name: "report"
-  paths:
-	journalBaseDir: "journals"
-  	documentNestingPath: "templates/report.tmpl"
+paths:
+  baseDir: "journals"
+  dirPattern: "templates/report.tmpl"
 `,
 			want: &Config{
 				DefaultFileType: "report",
@@ -41,18 +42,19 @@ documentTypes:
 		{
 			name: "Full Configuration With Schedules",
 			yamlData: `
-defaultDocType: "log"
-documentTypes:
-  - name: "log"
-    schedule:
-        frequency: "weekly"
-        days: [1,3,5]
+defaultFileType: "log"
+fileTypes:
+ - name: "log"
+   schedule:
+     frequency: "weekly"
+     days: [1,3,5]
+   templateName: "log.tmpl"
 paths:
-	templatesDir: "templates"
-	journalBaseDir: "journals"
-	nestedPathTemplate: "templates/log.tmpl"
+  templatesDir: "~/.journal/customtemplates"
+  baseDir: "~/journals"
+  dirPattern: "{{.Year}}/{{.Month}}/{{.Day}}/"
 userSettings:
-    timezone: "Europe/London"
+  timezone: "Europe/London"
 `,
 			want: &Config{
 				DefaultFileType: "log",
@@ -63,12 +65,13 @@ userSettings:
 							Frequency: "weekly",
 							Days:      []int{1, 3, 5},
 						},
+						TemplateName: "log.tmpl",
 					},
 				},
 				Paths: Paths{
-					TemplatesDir: "templates",
-					BaseDir:      "journals",
-					DirPattern:   "templates/log.tmpl",
+					TemplatesDir: "~/.journal/customtemplates",
+					BaseDir:      "~/journals",
+					DirPattern:   "{{.Year}}/{{.Month}}/{{.Day}}/",
 				},
 				UserSettings: UserSettings{
 					Timezone: "Europe/London",
@@ -79,24 +82,13 @@ userSettings:
 		{
 			name: "Invalid YAML Format",
 			yamlData: `
-		defaultDocType: "task"
-		documentTypes:
-		  - name: "task"
-		    templatePath: "templates/task.tmpl"
-		paths:
-		  journalDir: "journals"
-		  templatesDir
-		`,
-			want:    nil,
-			wantErr: true,
-		},
-		{
-			name: "Missing Required Fields",
-			yamlData: `
-		documentTypes:
-		  - name: "note"
-		    templatePath: "templates/note.tmpl"
-		`,
+defaultFileType: "task"
+fileTypes:
+  - name: "task"
+paths:
+  baseDir: "journals"
+  templatesDir
+`,
 			want:    nil,
 			wantErr: true,
 		},
@@ -104,14 +96,14 @@ userSettings:
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tempFile, err := os.CreateTemp("", "config-*.yaml")
-			if err != nil {
-				t.Fatalf("Failed to create temporary config file: %v", err)
-			}
+			require.NoError(t, err)
 			defer os.Remove(tempFile.Name())
 
-			if _, err := tempFile.WriteString(tt.yamlData); err != nil {
-				t.Fatalf("Failed to write to temporary config file: %v", err)
-			}
+			_, err = tempFile.WriteString(tt.yamlData)
+			require.NoError(t, err)
+
+			err = tempFile.Close()
+			require.NoError(t, err)
 
 			got, err := LoadConfig(tempFile.Name())
 

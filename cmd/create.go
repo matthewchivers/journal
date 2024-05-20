@@ -3,7 +3,9 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/matthewchivers/journal/pkg/fileops"
 	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/spf13/cobra"
@@ -19,11 +21,24 @@ var createCmd = &cobra.Command{
 		}
 		fmt.Printf("Creating new journal entry using template: %s\n", templateName)
 
-		fullPath, err := paths.ConstructFullPath(cfg.Paths.BaseDir, cfg.Paths.DirPattern, templateName)
+		fileInfo := config.FileType{}
+		for _, fileType := range cfg.FileTypes {
+			if fileType.Name == templateName {
+				fileInfo = fileType
+			}
+		}
+		fullPath, err := paths.ConstructFullPath(cfg.Paths, fileInfo)
 		if err != nil {
 			fmt.Println("Error constructing file path:", err)
 			os.Exit(1)
 		}
+		fullPath = strings.TrimSuffix(fullPath, "/")
+
+		fileName := fileops.GetFileName(fileInfo)
+
+		// Append the file name to the full path
+		fullPath = fmt.Sprintf("%s/%s", fullPath, fileName)
+
 		if err := fileops.CreateNewFile(fullPath); err != nil {
 			fmt.Println("Error creating file:", err)
 			os.Exit(1)

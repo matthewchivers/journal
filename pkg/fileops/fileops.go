@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/matthewchivers/journal/pkg/config"
+	"github.com/matthewchivers/journal/pkg/templating"
 )
 
 // CreateNewFile creates a new file based on the provided configuration and document template name
@@ -28,4 +31,19 @@ func ensureDirectoryExists(dirPath string) error {
 		}
 	}
 	return nil
+}
+
+// GetFileName returns the file name for the file type
+func GetFileName(fileType config.FileType) string {
+	fileNameRaw := fileType.FileNamePattern
+	if fileNameRaw == "" {
+		fileNameRaw = fileType.Name
+	}
+
+	fileNameParsed, err := templating.ParsePattern(fileNameRaw, fileType)
+	if err != nil {
+		return fmt.Sprintf("failed to parse file name: %s", err)
+	}
+
+	return fileNameParsed
 }

@@ -29,3 +29,22 @@ func WeekCommencing(t time.Time) time.Time {
 	weekCommencing := t.AddDate(0, 0, offset*-1)
 	return weekCommencing
 }
+
+// OrdinalSuffix returns the ordinal suffix for the given day of the month.
+// e.g. 1st, 2nd, 3rd, 4th
+func OrdinalSuffix(day int) string {
+	if day >= 11 && day <= 13 {
+		return "th"
+	}
+
+	switch day % 10 {
+	case 1:
+		return "st"
+	case 2:
+		return "nd"
+	case 3:
+		return "rd"
+	default:
+		return "th"
+	}
+}

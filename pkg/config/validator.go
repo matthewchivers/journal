@@ -19,8 +19,8 @@ func ValidateConfig(cfg Config) error {
 		if fileType.Name == "" {
 			return errors.New("file type name not set")
 		}
-		if fileType.FileExtension == "" {
-			return errors.New("file extension not set")
+		if fileType.FileExtension == "" && cfg.DefaultFileExtension == "" {
+			return errors.New("file extension not set (defaultFileExtension must be set if fileExtension is not set for an individual file entry)")
 		}
 	}
 	return nil

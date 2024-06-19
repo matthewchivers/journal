@@ -42,6 +42,8 @@ func TestPrepareTemplateData(t *testing.T) {
 				Year:             currentYear,
 				YearShort:        currentYearShort,
 				Month:            currentMonth,
+				MonthName:        date.Month().String(),
+				MonthNameShort:   date.Month().String()[:3],
 				Day:              currentDay,
 				DayOrdinal:       caltools.OrdinalSuffix(date.Day()),
 				WeekdayName:      currentWeekdayName,

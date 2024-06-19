@@ -19,6 +19,12 @@ type TemplateData struct {
 	// Month is the current month (e.g. 01)
 	Month string
 
+	// MonthName is the name of the current month (e.g. January)
+	MonthName string
+
+	// MonthNameShort is the short name of the current month (e.g. Jan)
+	MonthNameShort string
+
 	// Day is the current day (e.g. 02)
 	Day string
 
@@ -55,6 +61,8 @@ func PrepareTemplateData(fileType config.FileType, weekCommencing bool) (Templat
 		Year:             timeNow.Format("2006"),
 		YearShort:        timeNow.Format("06"),
 		Month:            timeNow.Format("01"),
+		MonthName:        timeNow.Month().String(),
+		MonthNameShort:   timeNow.Month().String()[:3],
 		Day:              timeNow.Format("02"),
 		DayOrdinal:       caltools.OrdinalSuffix(timeNow.Day()),
 		WeekdayName:      timeNow.Weekday().String(),

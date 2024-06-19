@@ -81,3 +81,87 @@ func TestWeekCommencing(t *testing.T) {
 		})
 	}
 }
+
+func TestOrdinalSuffix(t *testing.T) {
+	type args struct {
+		day int
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "1st",
+			args: args{day: 1},
+			want: "st",
+		},
+		{
+			name: "2nd",
+			args: args{day: 2},
+			want: "nd",
+		},
+		{
+			name: "3rd",
+			args: args{day: 3},
+			want: "rd",
+		},
+		{
+			name: "4th",
+			args: args{day: 4},
+			want: "th",
+		},
+		{
+			name: "11th",
+			args: args{day: 11},
+			want: "th",
+		},
+		{
+			name: "12th",
+			args: args{day: 12},
+			want: "th",
+		},
+		{
+			name: "13th",
+			args: args{day: 13},
+			want: "th",
+		},
+		{
+			name: "21st",
+			args: args{day: 21},
+			want: "st",
+		},
+		{
+			name: "22nd",
+			args: args{day: 22},
+			want: "nd",
+		},
+		{
+			name: "23rd",
+			args: args{day: 23},
+			want: "rd",
+		},
+		{
+			name: "24th",
+			args: args{day: 24},
+			want: "th",
+		},
+		{
+			name: "30th",
+			args: args{day: 30},
+			want: "th",
+		},
+		{
+			name: "31st",
+			args: args{day: 31},
+			want: "st",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := OrdinalSuffix(tt.args.day); got != tt.want {
+				t.Errorf("OrdinalSuffix() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

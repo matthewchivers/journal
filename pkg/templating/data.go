@@ -22,8 +22,14 @@ type TemplateData struct {
 	// Day is the current day (e.g. 02)
 	Day string
 
+	// Day with ordinal suffix (e.g. 1st, 2nd, 3rd, 4th)
+	DayOrdinal string
+
 	// WeekdayName is the name of the current day of the week (e.g. Monday)
 	WeekdayName string
+
+	// WeekdayNameShort is the short name of the current day of the week (e.g. Mon)
+	WeekdayNameShort string
 
 	// WeekdayNumber is the number of the current day of the week (e.g. 1)
 	WeekdayNumber string
@@ -46,16 +52,18 @@ type TemplateData struct {
 func PrepareTemplateData(fileType config.FileType, weekCommencing bool) (TemplateData, error) {
 	timeNow := time.Now()
 	data := TemplateData{
-		Year:           timeNow.Format("2006"),
-		YearShort:      timeNow.Format("06"),
-		Month:          timeNow.Format("01"),
-		Day:            timeNow.Format("02"),
-		WeekdayName:    timeNow.Weekday().String(),
-		WeekdayNumber:  string(rune(timeNow.Weekday())),
-		WeekCommencing: caltools.WeekCommencing(timeNow).Format("2006-01-02"),
-		WeekNumber:     string(rune(caltools.WeekOfMonth(timeNow))),
-		FileTypeName:   fileType.Name,
-		FileExtension:  fileType.FileExtension,
+		Year:             timeNow.Format("2006"),
+		YearShort:        timeNow.Format("06"),
+		Month:            timeNow.Format("01"),
+		Day:              timeNow.Format("02"),
+		DayOrdinal:       caltools.OrdinalSuffix(timeNow.Day()),
+		WeekdayName:      timeNow.Weekday().String(),
+		WeekdayNameShort: timeNow.Weekday().String()[:3],
+		WeekdayNumber:    string(rune(timeNow.Weekday())),
+		WeekCommencing:   caltools.WeekCommencing(timeNow).Format("2006-01-02"),
+		WeekNumber:       string(rune(caltools.WeekOfMonth(timeNow))),
+		FileTypeName:     fileType.Name,
+		FileExtension:    fileType.FileExtension,
 	}
 
 	// WeekCommencing directories should nest in the same Year/Month as the commencing date.

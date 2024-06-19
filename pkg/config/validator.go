@@ -4,6 +4,7 @@ import (
 	"errors"
 )
 
+// ValidateConfig checks that the provided configuration is valid
 func ValidateConfig(cfg Config) error {
 	if cfg.Paths.BaseDir == "" {
 		return errors.New("base directory not set")

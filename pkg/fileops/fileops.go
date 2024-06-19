@@ -34,7 +34,10 @@ func ensureDirectoryExists(dirPath string) error {
 }
 
 // GetFileName returns the file name for the file type
-func GetFileName(fileType config.FileType) string {
+func GetFileName(fileType config.FileType) (string, error) {
+	if fileType.FileNamePattern == "" {
+		return fmt.Sprintf("%s.%s", fileType.Name, fileType.FileExtension), nil
+	}
 	fileNameRaw := fileType.FileNamePattern
 	if fileNameRaw == "" {
 		fileNameRaw = fileType.Name
@@ -42,8 +45,8 @@ func GetFileName(fileType config.FileType) string {
 
 	fileNameParsed, err := templating.ParsePattern(fileNameRaw, fileType)
 	if err != nil {
-		return fmt.Sprintf("failed to parse file name: %s", err)
+		return "", err
 	}
 
-	return fileNameParsed
+	return fileNameParsed, nil
 }

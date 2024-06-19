@@ -34,7 +34,11 @@ var createCmd = &cobra.Command{
 		}
 		fullPath = strings.TrimSuffix(fullPath, "/")
 
-		fileName := fileops.GetFileName(fileInfo)
+		fileName, err := fileops.GetFileName(fileInfo)
+		if err != nil {
+			fmt.Println("Error getting file name:", err)
+			os.Exit(1)
+		}
 
 		// Append the file name to the full path
 		fullPath = fmt.Sprintf("%s/%s", fullPath, fileName)

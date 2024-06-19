@@ -14,6 +14,9 @@ func CreateNewFile(filePath string) error {
 	if err := ensureDirectoryExists(filepath.Dir(filePath)); err != nil {
 		return err
 	}
+	if _, err := os.Stat(filePath); err == nil {
+		return fmt.Errorf("file already exists: %s", filePath)
+	}
 	file, err := os.Create(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)

@@ -30,7 +30,7 @@ type FileType struct {
 	Schedule Schedule `yaml:"schedule,omitempty"`
 
 	// SubDirPattern is the pattern to use when creating a subdirectory
-	SubDirPattern string `yaml:"SubDirPattern,omitempty"`
+	SubDirPattern string `yaml:"subDirPattern,omitempty"`
 
 	// FileNamePattern is the pattern to use when creating a file name
 	FileNamePattern string `yaml:"fileNamePattern,omitempty"`

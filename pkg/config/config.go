@@ -5,8 +5,11 @@ type Config struct {
 	// DefaultFileType is the default file type (name) to use when creating a new entry
 	DefaultFileType string `yaml:"defaultFileType"`
 
+	// DefaultFileExtension is the default file extension to use when creating a new entry
+	DefaultFileExtension string `yaml:"defaultFileExtension,omitempty"`
+
 	// FileTypes is a list of file types
-	FileTypes []FileType `yaml:"fileTypes,omitempty"`
+	FileTypes []FileType `yaml:"fileTypes"`
 
 	// Paths contains the paths to directories used by the application
 	Paths Paths `yaml:"paths"`

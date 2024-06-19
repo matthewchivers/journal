@@ -13,6 +13,9 @@ type TemplateData struct {
 	// Year is the current year (e.g. 2021)
 	Year string
 
+	// YearShort is the current year in short form (e.g. 21)
+	YearShort string
+
 	// Month is the current month (e.g. 01)
 	Month string
 
@@ -44,6 +47,7 @@ func PrepareTemplateData(fileType config.FileType, weekCommencing bool) (Templat
 	timeNow := time.Now()
 	data := TemplateData{
 		Year:           timeNow.Format("2006"),
+		YearShort:      timeNow.Format("06"),
 		Month:          timeNow.Format("01"),
 		Day:            timeNow.Format("02"),
 		WeekdayName:    timeNow.Weekday().String(),

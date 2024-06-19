@@ -16,6 +16,7 @@ func TestPrepareTemplateData(t *testing.T) {
 	currentWeekdayName := date.Weekday().String()
 
 	currentYear := date.Format("2006")
+	currentYearShort := date.Format("06")
 	currentMonth := date.Format("01")
 	currentDay := date.Format("02")
 
@@ -39,6 +40,7 @@ func TestPrepareTemplateData(t *testing.T) {
 			},
 			want: TemplateData{
 				Year:           currentYear,
+				YearShort:      currentYearShort,
 				Month:          currentMonth,
 				Day:            currentDay,
 				WeekdayName:    currentWeekdayName,

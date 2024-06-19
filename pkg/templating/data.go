@@ -38,6 +38,8 @@ type TemplateData struct {
 	FileExtension string
 }
 
+// PrepareTemplateData creates a new TemplateData struct with the current date and file type
+// If weekCommencing is true, the WeekCommencing date is used to calculate year/month/week number
 func PrepareTemplateData(fileType config.FileType, weekCommencing bool) (TemplateData, error) {
 	timeNow := time.Now()
 	data := TemplateData{

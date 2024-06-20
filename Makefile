@@ -36,7 +36,10 @@ build-darwin-amd64:
 build-darwin-arm64:
 	GOOS=darwin GOARCH=arm64 $(GOBUILD) -o $(DARWIN_ARM64)
 
-test: vet
+lint:
+	golangci-lint run
+
+test: vet lint
 	$(GOTEST) -v ./...
 
 vet:

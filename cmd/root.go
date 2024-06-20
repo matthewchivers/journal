@@ -17,20 +17,20 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "journal",
 	Short: "Journal is a simple CLI journaling application",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if rawCfg, err := config.LoadConfig(cfgPath); err != nil {
+	PersistentPreRun: func(_ *cobra.Command, _ []string) {
+		rawCfg, err := config.LoadConfig(cfgPath)
+		if err != nil {
 			fmt.Println("Unable to load config file", err)
 			os.Exit(1)
-		} else {
-			err := config.ValidateConfig(*rawCfg)
-			if err != nil {
-				fmt.Println("Invalid config file:", err)
-				os.Exit(1)
-			}
-			cfg = rawCfg
 		}
+		err = config.ValidateConfig(*rawCfg)
+		if err != nil {
+			fmt.Println("Invalid config file:", err)
+			os.Exit(1)
+		}
+		cfg = rawCfg
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Println("Welcome to Journal CLI. Use 'journal --help' to see available commands.")
 	},
 }

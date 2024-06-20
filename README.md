@@ -15,15 +15,15 @@ Journal is a versatile command-line tool designed for creating and managing jour
 
 Users can define their own types of documents and document structures, so that you always have the right kind of entry for the activity being journalled.
 
-- **Flexible Scheduling**: 
+- **Flexible Scheduling**:
 
 Journal supports creation of entries based on their scheduled occurrence. Got a status meeting that happens every day? Or perhaps a planning meeting every week on a Tuesday? Journal places the entry on the correct day for that week. Use flags such as `--previous` or `--next` to look back or plan ahead.
 
-- **Markdown**: 
+- **Markdown**:
 
 The developer's best friend; Leverage markdown for note-taking, including support for code snippets, structured headings, and metadata.
 
-- **Configuration via YAML**: 
+- **Configuration via YAML**:
 
 Define document schemas and templates in a YAML configuration file, offering a high degree of customization.Configuration GuideSetting Up Your Journal ConfigurationCreate a journal-config.yaml file in your project root. This file allows you to specify the document types you need, their schedules, and the templates for each document type.
 
@@ -38,7 +38,7 @@ documentTypes:
       days: [1-7]
       dates: [1-31]
       weeks: [1-4]
-      months: [1-12] 
+      months: [1-12]
     templatePath: status.md
 paths:
   templatesDir: ~/.journal/templates/
@@ -60,15 +60,19 @@ Journal's command-line interface is intuitive, designed to make creating and man
 
 ### Basic Commands
 Creating Today's Note: Simply type `journal` to generate today's note based on the default template.Specifying a Document Type: Use `journal scrum` or `journal playback` to create entries of those types.
-### Using Flags: 
+### Using Flags:
 Apply `--previous` or `--next` to create or access entries relative to today, based on the document type's frequency.
 `journal --previous` creates an entry for the previous occurrence based on its schedule. Forgot to write notes for yesterday's status meeting? `journal status --previous` takes you there. Planning ahead for next week's playback? `journal playback --next` will create an entry for the next occurrence.
 
 ## Future Directions:
-### Search Functionality: 
+### Search Functionality:
 Implement search capabilities to quickly find entries by date, tags, or content.
 ### GUI
 Integration into some nice markdown editor, perhaps.
 
 ## Conclusion:
 Journal aims to be a dynamic and essential tool for anyone looking to streamline their daily documentation process, providing the flexibility to adapt to any workflow while maintaining simplicity and efficiency in note-taking.
+
+## Contribution
+
+Project uses golangci-lint for linting, and pre-commit for the pre-commit hook.

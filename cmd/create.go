@@ -14,7 +14,7 @@ import (
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new journal entry",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		templateName := strings.ToLower(cfg.DefaultFileType)
 		if docType != "" {
 			templateName = strings.ToLower(docType)

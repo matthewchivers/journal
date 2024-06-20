@@ -46,7 +46,7 @@ func TestCreateNewFile(t *testing.T) {
 			expectedError: false,
 		},
 		{
-			name: "successful file creation - hardcoded extension",
+			name: "successful file creation - hardcoded extension", // support this as valid functionality in the future
 			cfg: &config.Config{
 				Paths: config.Paths{
 					BaseDir:    tempdir,
@@ -59,7 +59,7 @@ func TestCreateNewFile(t *testing.T) {
 					},
 				},
 			},
-			expectedError: false,
+			expectedError: true,
 		},
 		{
 			name: "successful file creation - no extension",

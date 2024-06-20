@@ -1,0 +1,11 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1  # Use the latest version or specify a specific version
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.43.0
+    hooks:
+      - id: golangci-lint
+        args: ["--fast", "--config", ".golangci.yml"]

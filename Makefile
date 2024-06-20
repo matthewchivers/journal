@@ -17,6 +17,8 @@ WINDOWS_AMD64=$(BINARY_NAME)_windows_amd64.exe
 DARWIN_AMD64=$(BINARY_NAME)_darwin_amd64
 DARWIN_ARM64=$(BINARY_NAME)_darwin_arm64
 
+.PHONY: all build buildall build-linux-amd64 build-windows-amd64 build-darwin-amd64 build-darwin-arm64 lint test vet clean run setup
+
 all: build
 
 build: test
@@ -57,3 +59,11 @@ clean:
 run:
 	$(GOBUILD) -o $(BINARY_NAME) -v ./...
 	./$(BINARY_NAME)
+
+setup:
+	@echo "Installing golangci-lint..."
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOPATH)/bin
+	@echo "Installing pre-commit..."
+	pip install pre-commit
+	@echo "Setting up pre-commit hooks..."
+	pre-commit install

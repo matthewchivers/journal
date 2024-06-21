@@ -31,29 +31,29 @@ fileTypes:
     schedule:
       frequency: daily
   - name: standup
-    fileNamePattern: "Standup-{{.WeekdayNameShort}}-{{.Day}}{{.DayOrdinal}}-{{.MonthNameShort}}-{{.YearShort}}.{{.FileExtension}}"
-    subDirPattern: "standups"
+    fileNamePattern: "{{.WeekdayNameShort}}-{{.Day}}{{.DayOrdinal}}-{{.MonthNameShort}}-{{.YearShort}}.{{.FileExtension}}"
+    subDirPattern: "standups/wc-{{.WeekCommencing}}"
     schedule:
       frequency: daily
 paths:
   baseDir: "/home/user/journal"
-  dirPattern: "{{.Year}}/{{.Month}}/wc {{.WeekCommencing}}"
+  dirPattern: "{{.Year}}/{{.Month}}/"
 ```
 
-### Example Output & Usage
+### Example Usage & Output
 
 Based on the above configuration, here is an example of what `journal` would create:
 
 - For a **Note** created on June 21, 2024:
   - **Command**: `journal create -t note`
     - Or just `journal create` because the config default file type is `note`
-  - **Directory**: `/home/user/journal/2024/06/wc 17-06-24/notes/`
+  - **Directory**: `/home/user/journal/2024/06/notes/`
   - **File**: `Note-21-06-2024.md`
 
 - For a **Daily Stand-up** created on June 21, 2024:
   - **Command**: `journal create -t standup`
-  - **Directory**: `/home/user/journal/2024/06/wc 17-06-24/standups/`
-  - **File**: `Standup-Fri-21st-Jun-24.md`
+  - **Directory**: `/home/user/journal/2024/06/standups/wc-17-06-24/`
+  - **File**: `Fri-21st-Jun-24.md`
 
 ## Contribution
 

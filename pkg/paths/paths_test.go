@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/matthewchivers/journal/pkg/caltools"
-	"github.com/matthewchivers/journal/pkg/config"
+	config "github.com/matthewchivers/journal/pkg/config/app"
 	"github.com/stretchr/testify/assert"
 )
 

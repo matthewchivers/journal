@@ -1,5 +1,7 @@
 package config
 
+import "fmt"
+
 // Config contains the configuration for the application
 type Config struct {
 	// DefaultEntry: specify the entry id of the desired default entry
@@ -16,4 +18,13 @@ type Config struct {
 
 	// UserSettings contains user-specific settings
 	UserSettings UserSettings `yaml:"userSettings,omitempty"`
+}
+
+func (cfg *Config) GetEntry(entryID string) (*Entry, error) {
+	for _, entry := range cfg.Entries {
+		if entry.ID == entryID {
+			return &entry, nil
+		}
+	}
+	return nil, fmt.Errorf("entry not found: %s", entryID)
 }

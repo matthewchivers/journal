@@ -5,9 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/matthewchivers/journal/pkg/fileops"
-	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/spf13/cobra"
 )
 
@@ -23,19 +21,13 @@ var createCmd = &cobra.Command{
 		}
 		fmt.Printf("Creating new journal entry using template: %s\n", templateName)
 
-		entry := config.Entry{}
-		for _, ent := range cfg.Entries {
-			if strings.ToLower(ent.ID) == templateName {
-				entry = ent
-			}
-		}
-		fullPath, err := paths.ConstructFullPath(cfg.Paths, entry)
+		entryPath, err := cfg.GetEntryPath(templateName)
 		if err != nil {
-			fmt.Println("Error constructing file path:", err)
+			fmt.Println("Error getting entry path:", err)
 			os.Exit(1)
 		}
 
-		if err := fileops.CreateNewFile(fullPath); err != nil {
+		if err := fileops.CreateNewFile(entryPath); err != nil {
 			fmt.Println("Error creating file:", err)
 			os.Exit(1)
 		}

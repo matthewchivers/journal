@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var topic string
+
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new journal entry",
@@ -42,5 +44,6 @@ var createCmd = &cobra.Command{
 
 func init() {
 	createCmd.PersistentFlags().StringVarP(&docType, "template", "t", "", "document template to use")
+	createCmd.PersistentFlags().StringVarP(&topic, "topic", "p", "", "topic to use for templating")
 	rootCmd.AddCommand(createCmd)
 }

@@ -5,10 +5,10 @@ type Paths struct {
 	// TemplatesDir is the path to the templates directory (default: ~/.journal/templates)
 	TemplatesDir string `yaml:"templatesDir,omitempty"`
 
-	// BaseDir is the base directory for entries (default: ~/journal)
-	BaseDir string `yaml:"baseDir"`
+	// BaseDirectory is the base directory for entries (default: ~/journal)
+	BaseDirectory string `yaml:"baseDirectory"`
 
-	// DirPattern is the pattern to use when creating a directory inside the BaseDir directory
+	// JournalDirectory is the pattern to use when creating a directory inside the BaseDirectory directory
 	// {{.Year}}           - Current year (YYYY -> 2024)
 	// {{.YearShort}}.     - Current year in short form (YY -> 24)
 	// {{.Month}}          - Current month (MM -> 01)
@@ -25,5 +25,5 @@ type Paths struct {
 	// {{.FileExtension}}   - File extension of the document/file type being created (e.g. md)
 	// example: {{.Year}}/{{.Month}}/{{.Day}}/{{.EntryID}} -> 2024/01/02/note
 	// or: {{.Year}}/{{.WeekCommencing}}/{{.WeekdayName}}/{{.EntryID}} -> 2024/2024-01-02/Monday/note
-	DirPattern string `yaml:"dirPattern,omitempty"`
+	JournalDirectory string `yaml:"journalDirectory,omitempty"`
 }

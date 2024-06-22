@@ -22,8 +22,7 @@ defaultEntry: "report"
 entries:
   - id: "report"
 paths:
-  baseDir: "journals"
-  dirPattern: "templates/report.tmpl"
+  baseDirectory: "/journals"
 `,
 			want: &Config{
 				DefaultEntry: "report",
@@ -33,8 +32,7 @@ paths:
 					},
 				},
 				Paths: Paths{
-					BaseDir:    "journals",
-					DirPattern: "templates/report.tmpl",
+					BaseDirectory: "/journals",
 				},
 			},
 			wantErr: false,
@@ -46,13 +44,13 @@ defaultEntry: "log"
 entries:
  - id: "log"
    schedule:
-     frequency: "weekly"
+     frequency: "daily"
      days: [1,3,5]
    templateName: "log.tmpl"
 paths:
   templatesDir: "~/.journal/customtemplates"
-  baseDir: "~/journals"
-  dirPattern: "{{.Year}}/{{.Month}}/{{.Day}}/"
+  baseDirectory: "~/journals"
+  journalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}/"
 userSettings:
   timezone: "Europe/London"
 `,
@@ -62,16 +60,16 @@ userSettings:
 					{
 						ID: "log",
 						Schedule: Schedule{
-							Frequency: "weekly",
+							Frequency: "daily",
 							Days:      []int{1, 3, 5},
 						},
 						TemplateName: "log.tmpl",
 					},
 				},
 				Paths: Paths{
-					TemplatesDir: "~/.journal/customtemplates",
-					BaseDir:      "~/journals",
-					DirPattern:   "{{.Year}}/{{.Month}}/{{.Day}}/",
+					TemplatesDir:     "~/.journal/customtemplates",
+					BaseDirectory:    "~/journals",
+					JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}/",
 				},
 				UserSettings: UserSettings{
 					Timezone: "Europe/London",
@@ -86,7 +84,7 @@ defaultEntry: "task"
 entries:
   - id: "task"
 paths:
-  baseDir: "journals"
+  baseDirectory: "journals"
   templatesDir
 `,
 			want:    nil,

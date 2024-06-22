@@ -17,10 +17,10 @@ func (cfg *Config) Validate() error {
 
 // validatePaths checks that the paths in the configuration are valid
 func validatePaths(paths Paths) error {
-	if paths.BaseDir == "" {
+	if paths.BaseDirectory == "" {
 		return errors.New("base directory not set")
 	}
-	if paths.DirPattern == "" {
+	if paths.JournalDirectory == "" {
 		return errors.New("directory pattern not set")
 	}
 

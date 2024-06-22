@@ -1,9 +1,9 @@
 package app
 
-// FileType contains the configuration for a file type
-type FileType struct {
-	// Name is the name of the file type (not the name of the file being created)
-	Name string `yaml:"name"`
+// Entry contains the configuration for a entry type
+type Entry struct {
+	// ID is the identifier for the entry
+	ID string `yaml:"id"`
 
 	// FileExtension is the file extension to use when creating a new entry
 	FileExtension string `yaml:"fileExtension,omitempty"`

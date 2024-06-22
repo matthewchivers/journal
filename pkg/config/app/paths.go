@@ -21,9 +21,9 @@ type Paths struct {
 	// {{.WeekdayNumber}}  - Current weekday number (0-7)
 	// {{.WeekCommencing}} - Date of the week commencing (e.g. Monday of the current week)
 	// {{.WeekNumber}}     - Week number of the year
-	// {{.FileTypeName}}    - Name of the document/file type being created (e.g. note, todo, etc.)
+	// {{.EntryID}}    - Name of the document/file type being created (e.g. note, todo, etc.)
 	// {{.FileExtension}}   - File extension of the document/file type being created (e.g. md)
-	// example: {{.Year}}/{{.Month}}/{{.Day}}/{{.FileTypeName}} -> 2024/01/02/note
-	// or: {{.Year}}/{{.WeekCommencing}}/{{.WeekdayName}}/{{.FileTypeName}} -> 2024/2024-01-02/Monday/note
+	// example: {{.Year}}/{{.Month}}/{{.Day}}/{{.EntryID}} -> 2024/01/02/note
+	// or: {{.Year}}/{{.WeekCommencing}}/{{.WeekdayName}}/{{.EntryID}} -> 2024/2024-01-02/Monday/note
 	DirPattern string `yaml:"dirPattern,omitempty"`
 }

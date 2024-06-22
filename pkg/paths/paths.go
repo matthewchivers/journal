@@ -10,29 +10,29 @@ import (
 
 // ConstructFullPath constructs the full path for the new file
 // Returns format: basePath/mainPath/nestedPath
-func ConstructFullPath(paths config.Paths, fileType config.FileType) (string, error) {
+func ConstructFullPath(paths config.Paths, entry config.Entry) (string, error) {
 	basePath := paths.BaseDir
 	mainPathPattern := paths.DirPattern
-	if fileType.CustomDirPattern != "" {
-		mainPathPattern = fileType.CustomDirPattern
+	if entry.CustomDirPattern != "" {
+		mainPathPattern = entry.CustomDirPattern
 	}
 
 	nestedPathPattern := ""
-	if fileType.SubDirPattern != "" {
-		nestedPathPattern = fileType.SubDirPattern
+	if entry.SubDirPattern != "" {
+		nestedPathPattern = entry.SubDirPattern
 	}
 
-	mainPath, err := templating.ParsePattern(mainPathPattern, fileType)
+	mainPath, err := templating.ParsePattern(mainPathPattern, entry)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct base path: %w", err)
 	}
 
-	nestedPath, err := templating.ParsePattern(nestedPathPattern, fileType)
+	nestedPath, err := templating.ParsePattern(nestedPathPattern, entry)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct nested path: %w", err)
 	}
 
-	fileName, err := templating.ParsePattern(fileType.FileNamePattern, fileType)
+	fileName, err := templating.ParsePattern(entry.FileNamePattern, entry)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct file name: %w", err)
 	}

@@ -17,19 +17,19 @@ var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new journal entry",
 	Run: func(_ *cobra.Command, _ []string) {
-		templateName := strings.ToLower(cfg.DefaultFileType)
+		templateName := strings.ToLower(cfg.DefaultEntry)
 		if docType != "" {
 			templateName = strings.ToLower(docType)
 		}
 		fmt.Printf("Creating new journal entry using template: %s\n", templateName)
 
-		fileInfo := config.FileType{}
-		for _, fileType := range cfg.FileTypes {
-			if strings.ToLower(fileType.Name) == templateName {
-				fileInfo = fileType
+		entry := config.Entry{}
+		for _, ent := range cfg.Entries {
+			if strings.ToLower(ent.ID) == templateName {
+				entry = ent
 			}
 		}
-		fullPath, err := paths.ConstructFullPath(cfg.Paths, fileInfo)
+		fullPath, err := paths.ConstructFullPath(cfg.Paths, entry)
 		if err != nil {
 			fmt.Println("Error constructing file path:", err)
 			os.Exit(1)

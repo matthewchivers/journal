@@ -18,9 +18,9 @@ func TestValidateConfig(t *testing.T) {
 					Paths: Paths{
 						DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 					},
-					FileTypes: []FileType{
+					Entries: []Entry{
 						{
-							Name:          "foo",
+							ID:            "foo",
 							FileExtension: "md",
 						},
 					},
@@ -35,9 +35,9 @@ func TestValidateConfig(t *testing.T) {
 					Paths: Paths{
 						BaseDir: "/tmp",
 					},
-					FileTypes: []FileType{
+					Entries: []Entry{
 						{
-							Name:          "foo",
+							ID:            "foo",
 							FileExtension: "md",
 						},
 					},
@@ -65,7 +65,7 @@ func TestValidateConfig(t *testing.T) {
 						BaseDir:    "/tmp",
 						DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 					},
-					FileTypes: []FileType{
+					Entries: []Entry{
 						{
 							FileExtension: "md",
 						},
@@ -82,9 +82,9 @@ func TestValidateConfig(t *testing.T) {
 						BaseDir:    "/tmp",
 						DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 					},
-					FileTypes: []FileType{
+					Entries: []Entry{
 						{
-							Name: "foo",
+							ID: "foo",
 						},
 					},
 				},
@@ -99,9 +99,9 @@ func TestValidateConfig(t *testing.T) {
 						BaseDir:    "/tmp",
 						DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 					},
-					FileTypes: []FileType{
+					Entries: []Entry{
 						{
-							Name:          "foo",
+							ID:            "foo",
 							FileExtension: "md",
 						},
 					},

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	config "github.com/matthewchivers/journal/pkg/config/app"
+	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/matthewchivers/journal/pkg/templating"
 )
 

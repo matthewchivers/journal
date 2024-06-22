@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	config "github.com/matthewchivers/journal/pkg/config/app"
+	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/stretchr/testify/assert"
 )

@@ -1,4 +1,4 @@
-package app
+package config
 
 // Entry contains the configuration for a entry type
 type Entry struct {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	config "github.com/matthewchivers/journal/pkg/config/app"
+	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/matthewchivers/journal/pkg/fileops"
 	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/spf13/cobra"

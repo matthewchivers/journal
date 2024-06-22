@@ -1,4 +1,4 @@
-package app
+package config
 
 // UserSettings contains user-specific settings
 type UserSettings struct {

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/matthewchivers/journal/pkg/caltools"
-	"github.com/matthewchivers/journal/pkg/config/app"
+	"github.com/matthewchivers/journal/pkg/config"
 )
 
 // TemplateData contains the template fields available for use in patterns
@@ -55,7 +55,7 @@ type TemplateData struct {
 
 // PrepareTemplateData creates a new TemplateData struct with the current date and file type
 // If weekCommencing is true, the WeekCommencing date is used to calculate year/month/week number
-func PrepareTemplateData(entry app.Entry, weekCommencing bool) (TemplateData, error) {
+func PrepareTemplateData(entry config.Entry, weekCommencing bool) (TemplateData, error) {
 	timeNow := time.Now()
 	data := TemplateData{
 		Year:             timeNow.Format("2006"),

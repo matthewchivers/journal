@@ -1,4 +1,4 @@
-package app
+package config
 
 // Config contains the configuration for the application
 type Config struct {

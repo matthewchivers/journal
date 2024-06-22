@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/matthewchivers/journal/pkg/caltools"
-	config "github.com/matthewchivers/journal/pkg/config/app"
+	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,7 +23,7 @@ func TestConstructFullPath(t *testing.T) {
 	wcCurrentMonth := weekCommencing.Format("01")
 
 	type args struct {
-		paths    config.Paths
+		paths config.Paths
 		entry config.Entry
 	}
 	tests := []struct {

@@ -1,4 +1,4 @@
-package app
+package config
 
 // Schedule contains the schedule for a file type
 type Schedule struct {

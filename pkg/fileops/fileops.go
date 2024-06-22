@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/matthewchivers/journal/pkg/config/app"
+	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/matthewchivers/journal/pkg/templating"
 )
 
@@ -42,7 +42,7 @@ func ensureDirectoryExists(dirPath string) error {
 }
 
 // GetFileName returns the file name for the file type
-func GetFileName(entry app.Entry) (string, error) {
+func GetFileName(entry config.Entry) (string, error) {
 	if entry.FileNamePattern == "" {
 		return fmt.Sprintf("%s.%s", entry.ID, entry.FileExtension), nil
 	}

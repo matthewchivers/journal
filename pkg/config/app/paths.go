@@ -1,4 +1,4 @@
-package config
+package app
 
 // Paths contains the paths to directories used by the application
 type Paths struct {

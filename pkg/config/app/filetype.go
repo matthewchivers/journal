@@ -1,4 +1,4 @@
-package config
+package app
 
 // FileType contains the configuration for a file type
 type FileType struct {

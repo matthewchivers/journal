@@ -5,11 +5,11 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/matthewchivers/journal/pkg/config"
+	"github.com/matthewchivers/journal/pkg/config/app"
 )
 
 // ParsePattern creates a new path for a journal entry based on a path template
-func ParsePattern(rawTemplate string, fileType config.FileType) (string, error) {
+func ParsePattern(rawTemplate string, fileType app.FileType) (string, error) {
 	data, err := PrepareTemplateData(fileType, strings.Contains(rawTemplate, "{{.WeekCommencing}}"))
 	if err != nil {
 		return "", err

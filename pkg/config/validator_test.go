@@ -16,7 +16,7 @@ func TestValidate(t *testing.T) {
 			args: args{
 				cfg: Config{
 					Paths: Paths{
-						DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
+						JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
 					},
 					Entries: []Entry{
 						{
@@ -33,7 +33,7 @@ func TestValidate(t *testing.T) {
 			args: args{
 				cfg: Config{
 					Paths: Paths{
-						BaseDir: "/tmp",
+						BaseDirectory: "/tmp",
 					},
 					Entries: []Entry{
 						{
@@ -50,8 +50,8 @@ func TestValidate(t *testing.T) {
 			args: args{
 				cfg: Config{
 					Paths: Paths{
-						BaseDir:    "/tmp",
-						DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
+						BaseDirectory:    "/tmp",
+						JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
 					},
 				},
 			},
@@ -62,8 +62,8 @@ func TestValidate(t *testing.T) {
 			args: args{
 				cfg: Config{
 					Paths: Paths{
-						BaseDir:    "/tmp",
-						DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
+						BaseDirectory:    "/tmp",
+						JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
 					},
 					Entries: []Entry{
 						{
@@ -79,8 +79,8 @@ func TestValidate(t *testing.T) {
 			args: args{
 				cfg: Config{
 					Paths: Paths{
-						BaseDir:    "/tmp",
-						DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
+						BaseDirectory:    "/tmp",
+						JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
 					},
 					Entries: []Entry{
 						{
@@ -96,8 +96,8 @@ func TestValidate(t *testing.T) {
 			args: args{
 				cfg: Config{
 					Paths: Paths{
-						BaseDir:    "/tmp",
-						DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
+						BaseDirectory:    "/tmp",
+						JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
 					},
 					Entries: []Entry{
 						{

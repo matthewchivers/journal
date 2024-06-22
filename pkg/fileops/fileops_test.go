@@ -31,14 +31,14 @@ func TestCreateNewFile(t *testing.T) {
 			name: "successful file creation",
 			cfg: &config.Config{
 				Paths: config.Paths{
-					BaseDir:    tempdir,
-					DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
+					BaseDirectory:    tempdir,
+					JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
 				},
 				Entries: []config.Entry{
 					{
-						ID:              "foo",
-						FileExtension:   "md",
-						FileNamePattern: "{{.EntryID}}.{{.FileExtension}}",
+						ID:            "foo",
+						FileExtension: "md",
+						FileName:      "{{.EntryID}}.{{.FileExtension}}",
 					},
 				},
 			},
@@ -48,13 +48,13 @@ func TestCreateNewFile(t *testing.T) {
 			name: "successful file creation - hardcoded extension", // support this as valid functionality in the future
 			cfg: &config.Config{
 				Paths: config.Paths{
-					BaseDir:    tempdir,
-					DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
+					BaseDirectory:    tempdir,
+					JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
 				},
 				Entries: []config.Entry{
 					{
-						ID:              "foo",
-						FileNamePattern: "{{.EntryID}}.md",
+						ID:       "foo",
+						FileName: "{{.EntryID}}.md",
 					},
 				},
 			},
@@ -64,13 +64,13 @@ func TestCreateNewFile(t *testing.T) {
 			name: "successful file creation - no extension",
 			cfg: &config.Config{
 				Paths: config.Paths{
-					BaseDir:    tempdir,
-					DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
+					BaseDirectory:    tempdir,
+					JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
 				},
 				Entries: []config.Entry{
 					{
-						ID:              "foo",
-						FileNamePattern: "{{.EntryID}}",
+						ID:       "foo",
+						FileName: "{{.EntryID}}",
 					},
 				},
 			},
@@ -80,15 +80,15 @@ func TestCreateNewFile(t *testing.T) {
 			name: "successful file creation - custom subdirectory",
 			cfg: &config.Config{
 				Paths: config.Paths{
-					BaseDir:    tempdir,
-					DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
+					BaseDirectory:    tempdir,
+					JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
 				},
 				Entries: []config.Entry{
 					{
-						ID:              "foo",
-						FileNamePattern: "{{.EntryID}}.{{.FileExtension}}",
-						SubDirPattern:   "{{.EntryID}}s",
-						FileExtension:   "md",
+						ID:            "foo",
+						FileName:      "{{.EntryID}}.{{.FileExtension}}",
+						Directory:     "{{.EntryID}}s",
+						FileExtension: "md",
 					},
 				},
 			},

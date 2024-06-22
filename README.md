@@ -26,18 +26,18 @@ defaultEntry: note
 defaultFileExtension: md
 entries:
   - id: note
-    fileNamePattern: "Note-{{.Day}}-{{.Month}}-{{.Year}}.{{.FileExtension}}"
-    subDirPattern: "notes"
+    fileName: "Note-{{.Day}}-{{.Month}}-{{.Year}}.{{.FileExtension}}"
+    directory: "{{.EntryID}}s"
     schedule:
       frequency: daily
   - id: standup
-    fileNamePattern: "{{.WeekdayNameShort}}-{{.Day}}{{.DayOrdinal}}-{{.MonthNameShort}}-{{.YearShort}}.{{.FileExtension}}"
-    subDirPattern: "standups/wc-{{.WeekCommencing}}"
+    fileName: "{{.WeekdayNameShort}}-{{.Day}}{{.DayOrdinal}}-{{.MonthNameShort}}-{{.YearShort}}.{{.FileExtension}}"
+    directory: "{{.EntryID}}s/wc-{{.WeekCommencing}}"
     schedule:
       frequency: daily
 paths:
-  baseDir: "/home/user/journal"
-  dirPattern: "{{.Year}}/{{.Month}}/"
+  baseDirectory: "/home/user/journal"
+  journalDirectory: "{{.Year}}/{{.Month}}"
 ```
 
 ### Example Usage & Output

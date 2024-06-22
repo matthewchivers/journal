@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/matthewchivers/journal/pkg/config"
-	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -106,10 +105,8 @@ func TestCreateNewFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			entry := tt.cfg.Entries[0]
 
-			fullPath, err := paths.ConstructFullPath(tt.cfg.Paths, entry)
-			if err != nil {
-				panic(err)
-			}
+			fullPath, err := tt.cfg.GetEntryPath(entry.ID)
+			assert.NoError(t, err)
 
 			// Main function under test
 			err = CreateNewFile(fullPath)

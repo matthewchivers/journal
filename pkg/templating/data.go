@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/matthewchivers/journal/pkg/caltools"
-	"github.com/matthewchivers/journal/pkg/config"
 )
 
 // TemplateData contains the template fields available for use in patterns
@@ -55,7 +54,7 @@ type TemplateData struct {
 
 // PrepareTemplateData creates a new TemplateData struct with the current date and file type
 // If weekCommencing is true, the WeekCommencing date is used to calculate year/month/week number
-func PrepareTemplateData(entry config.Entry, weekCommencing bool) (TemplateData, error) {
+func PrepareTemplateData(entryID string, fileExtension string, weekCommencing bool) (TemplateData, error) {
 	timeNow := time.Now()
 	data := TemplateData{
 		Year:             timeNow.Format("2006"),
@@ -70,8 +69,8 @@ func PrepareTemplateData(entry config.Entry, weekCommencing bool) (TemplateData,
 		WeekdayNumber:    string(rune(timeNow.Weekday())),
 		WeekCommencing:   caltools.WeekCommencing(timeNow).Format("2006-01-02"),
 		WeekNumber:       string(rune(caltools.WeekOfMonth(timeNow))),
-		EntryID:          entry.ID,
-		FileExtension:    entry.FileExtension,
+		EntryID:          entryID,
+		FileExtension:    fileExtension,
 	}
 
 	// WeekCommencing directories should nest in the same Year/Month as the commencing date.

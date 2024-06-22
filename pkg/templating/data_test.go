@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/matthewchivers/journal/pkg/caltools"
-	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,7 +23,8 @@ func TestPrepareTemplateData(t *testing.T) {
 	// wcCurrentMonth := weekCommencing.Format("01")
 
 	type args struct {
-		entry          config.Entry
+		EntryID        string
+		FileExtension  string
 		weekCommencing bool
 	}
 	tests := []struct {
@@ -35,9 +35,7 @@ func TestPrepareTemplateData(t *testing.T) {
 	}{
 		{
 			name: "Test PrepareTemplateData",
-			args: args{
-				entry: config.Entry{ID: "notes", FileExtension: "md"},
-			},
+			args: args{EntryID: "notes", FileExtension: "md", weekCommencing: false},
 			want: TemplateData{
 				Year:             currentYear,
 				YearShort:        currentYearShort,
@@ -58,7 +56,7 @@ func TestPrepareTemplateData(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual, err := PrepareTemplateData(tt.args.entry, tt.args.weekCommencing)
+			actual, err := PrepareTemplateData(tt.args.EntryID, tt.args.FileExtension, tt.args.weekCommencing)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

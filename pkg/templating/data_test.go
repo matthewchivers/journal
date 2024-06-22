@@ -24,7 +24,7 @@ func TestPrepareTemplateData(t *testing.T) {
 	// wcCurrentMonth := weekCommencing.Format("01")
 
 	type args struct {
-		fileType       app.FileType
+		entry          app.Entry
 		weekCommencing bool
 	}
 	tests := []struct {
@@ -36,7 +36,7 @@ func TestPrepareTemplateData(t *testing.T) {
 		{
 			name: "Test PrepareTemplateData",
 			args: args{
-				fileType: app.FileType{Name: "notes", FileExtension: "md"},
+				entry: app.Entry{ID: "notes", FileExtension: "md"},
 			},
 			want: TemplateData{
 				Year:             currentYear,
@@ -51,14 +51,14 @@ func TestPrepareTemplateData(t *testing.T) {
 				WeekdayNumber:    string(rune(date.Weekday())),
 				WeekCommencing:   caltools.WeekCommencing(date).Format("2006-01-02"),
 				WeekNumber:       string(rune(currentWeek)),
-				FileTypeName:     "notes",
+				EntryID:          "notes",
 				FileExtension:    "md",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual, err := PrepareTemplateData(tt.args.fileType, tt.args.weekCommencing)
+			actual, err := PrepareTemplateData(tt.args.entry, tt.args.weekCommencing)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

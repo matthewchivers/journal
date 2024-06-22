@@ -18,18 +18,18 @@ func TestLoadConfig(t *testing.T) {
 		{
 			name: "Basic Configuration",
 			yamlData: `
-defaultFileType: "report"
-fileTypes:
-  - name: "report"
+defaultEntry: "report"
+entries:
+  - id: "report"
 paths:
   baseDir: "journals"
   dirPattern: "templates/report.tmpl"
 `,
 			want: &Config{
-				DefaultFileType: "report",
-				FileTypes: []FileType{
+				DefaultEntry: "report",
+				Entries: []Entry{
 					{
-						Name: "report",
+						ID: "report",
 					},
 				},
 				Paths: Paths{
@@ -42,9 +42,9 @@ paths:
 		{
 			name: "Full Configuration With Schedules",
 			yamlData: `
-defaultFileType: "log"
-fileTypes:
- - name: "log"
+defaultEntry: "log"
+entries:
+ - id: "log"
    schedule:
      frequency: "weekly"
      days: [1,3,5]
@@ -57,10 +57,10 @@ userSettings:
   timezone: "Europe/London"
 `,
 			want: &Config{
-				DefaultFileType: "log",
-				FileTypes: []FileType{
+				DefaultEntry: "log",
+				Entries: []Entry{
 					{
-						Name: "log",
+						ID: "log",
 						Schedule: Schedule{
 							Frequency: "weekly",
 							Days:      []int{1, 3, 5},
@@ -82,9 +82,9 @@ userSettings:
 		{
 			name: "Invalid YAML Format",
 			yamlData: `
-defaultFileType: "task"
-fileTypes:
-  - name: "task"
+defaultEntry: "task"
+entries:
+  - id: "task"
 paths:
   baseDir: "journals"
   templatesDir

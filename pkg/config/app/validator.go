@@ -9,7 +9,7 @@ func ValidateConfig(cfg Config) error {
 	if err := validatePaths(cfg.Paths); err != nil {
 		return err
 	}
-	if err := validateFileTypes(cfg.FileTypes, cfg.DefaultFileExtension); err != nil {
+	if err := validateEntries(cfg.Entries, cfg.DefaultFileExtension); err != nil {
 		return err
 	}
 	return nil
@@ -27,16 +27,16 @@ func validatePaths(paths Paths) error {
 	return nil
 }
 
-// validateFileTypes checks that the file types in the configuration are valid
-func validateFileTypes(fileTypes []FileType, defaultFileExtension string) error {
-	if len(fileTypes) == 0 {
+// validateEntries checks that the file types in the configuration are valid
+func validateEntries(entries []Entry, defaultFileExtension string) error {
+	if len(entries) == 0 {
 		return errors.New("no file types defined")
 	}
-	for _, fileType := range fileTypes {
-		if fileType.Name == "" {
+	for _, entry := range entries {
+		if entry.ID == "" {
 			return errors.New("file type name not set")
 		}
-		if fileType.FileExtension == "" && defaultFileExtension == "" {
+		if entry.FileExtension == "" && defaultFileExtension == "" {
 			return errors.New("file extension not set (defaultFileExtension must be set if fileExtension is not set for an individual file entry)")
 		}
 	}

@@ -35,11 +35,11 @@ func TestCreateNewFile(t *testing.T) {
 					BaseDir:    tempdir,
 					DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 				},
-				FileTypes: []config.FileType{
+				Entries: []config.Entry{
 					{
-						Name:            "foo",
+						ID:              "foo",
 						FileExtension:   "md",
-						FileNamePattern: "{{.FileTypeName}}.{{.FileExtension}}",
+						FileNamePattern: "{{.EntryID}}.{{.FileExtension}}",
 					},
 				},
 			},
@@ -52,10 +52,10 @@ func TestCreateNewFile(t *testing.T) {
 					BaseDir:    tempdir,
 					DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 				},
-				FileTypes: []config.FileType{
+				Entries: []config.Entry{
 					{
-						Name:            "foo",
-						FileNamePattern: "{{.FileTypeName}}.md",
+						ID:              "foo",
+						FileNamePattern: "{{.EntryID}}.md",
 					},
 				},
 			},
@@ -68,10 +68,10 @@ func TestCreateNewFile(t *testing.T) {
 					BaseDir:    tempdir,
 					DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 				},
-				FileTypes: []config.FileType{
+				Entries: []config.Entry{
 					{
-						Name:            "foo",
-						FileNamePattern: "{{.FileTypeName}}",
+						ID:              "foo",
+						FileNamePattern: "{{.EntryID}}",
 					},
 				},
 			},
@@ -84,11 +84,11 @@ func TestCreateNewFile(t *testing.T) {
 					BaseDir:    tempdir,
 					DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 				},
-				FileTypes: []config.FileType{
+				Entries: []config.Entry{
 					{
-						Name:            "foo",
-						FileNamePattern: "{{.FileTypeName}}.{{.FileExtension}}",
-						SubDirPattern:   "{{.FileTypeName}}s",
+						ID:              "foo",
+						FileNamePattern: "{{.EntryID}}.{{.FileExtension}}",
+						SubDirPattern:   "{{.EntryID}}s",
 						FileExtension:   "md",
 					},
 				},
@@ -104,9 +104,9 @@ func TestCreateNewFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fileType := tt.cfg.FileTypes[0]
+			entry := tt.cfg.Entries[0]
 
-			fullPath, err := paths.ConstructFullPath(tt.cfg.Paths, fileType)
+			fullPath, err := paths.ConstructFullPath(tt.cfg.Paths, entry)
 			if err != nil {
 				panic(err)
 			}

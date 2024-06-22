@@ -22,15 +22,15 @@ go install github.com/matthewchivers/journal@latest
 The configuration file is stored in the user's home directory at `~/.journal/config.yaml`. Below is an example configuration file:
 
 ```yaml
-defaultFileType: note
+defaultEntry: note
 defaultFileExtension: md
-fileTypes:
-  - name: note
+entries:
+  - id: note
     fileNamePattern: "Note-{{.Day}}-{{.Month}}-{{.Year}}.{{.FileExtension}}"
     subDirPattern: "notes"
     schedule:
       frequency: daily
-  - name: standup
+  - id: standup
     fileNamePattern: "{{.WeekdayNameShort}}-{{.Day}}{{.DayOrdinal}}-{{.MonthNameShort}}-{{.YearShort}}.{{.FileExtension}}"
     subDirPattern: "standups/wc-{{.WeekCommencing}}"
     schedule:

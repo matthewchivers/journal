@@ -24,7 +24,7 @@ func TestConstructFullPath(t *testing.T) {
 
 	type args struct {
 		paths    config.Paths
-		fileType config.FileType
+		entry config.Entry
 	}
 	tests := []struct {
 		name    string
@@ -33,13 +33,13 @@ func TestConstructFullPath(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Valid template: year/month/week/FileTypeName",
+			name: "Valid template: year/month/week/entryID",
 			args: args{
 				paths: config.Paths{
 					BaseDir:    "base",
-					DirPattern: "{{.Year}}/{{.Month}}/{{.WeekNumber}}/{{.FileTypeName}}",
+					DirPattern: "{{.Year}}/{{.Month}}/{{.WeekNumber}}/{{.EntryID}}",
 				},
-				fileType: config.FileType{Name: "foo-note"},
+				entry: config.Entry{ID: "foo-note"},
 			},
 			want:    "base/" + currentYear + "/" + currentMonth + "/" + string(rune(currentWeek)) + "/foo-note",
 			wantErr: false,
@@ -49,9 +49,9 @@ func TestConstructFullPath(t *testing.T) {
 			args: args{
 				paths: config.Paths{
 					BaseDir:    "base",
-					DirPattern: "{{.Year}}/{{.Month}}/wc {{.WeekCommencing}}/{{.WeekdayName}}/{{.FileTypeName}}",
+					DirPattern: "{{.Year}}/{{.Month}}/wc {{.WeekCommencing}}/{{.WeekdayName}}/{{.EntryID}}",
 				},
-				fileType: config.FileType{Name: "foo-note"},
+				entry: config.Entry{ID: "foo-note"},
 			},
 			want:    "base/" + wcCurrentYear + "/" + wcCurrentMonth + "/wc " + weekCommencing.Format("2006-01-02") + "/" + currentWeekdayName + "/foo-note",
 			wantErr: false,
@@ -61,9 +61,9 @@ func TestConstructFullPath(t *testing.T) {
 			args: args{
 				paths: config.Paths{
 					BaseDir:    "base",
-					DirPattern: "{{.Year}}/{{.Month}}/{{.WeekCommencing}}/{{.FileTypeName}}",
+					DirPattern: "{{.Year}}/{{.Month}}/{{.WeekCommencing}}/{{.EntryID}}",
 				},
-				fileType: config.FileType{Name: "foo-note"},
+				entry: config.Entry{ID: "foo-note"},
 			},
 			want:    "base/" + currentYear + "/" + currentMonth + "/" + weekCommencing.Format("2006-01-02") + "/foo-note",
 			wantErr: false,
@@ -75,7 +75,7 @@ func TestConstructFullPath(t *testing.T) {
 					BaseDir:    "base",
 					DirPattern: "static-path/foo-note.md",
 				},
-				fileType: config.FileType{Name: "foo-note"},
+				entry: config.Entry{ID: "foo-note"},
 			},
 			want:    "base/static-path/foo-note.md",
 			wantErr: false,
@@ -85,12 +85,12 @@ func TestConstructFullPath(t *testing.T) {
 			args: args{
 				paths: config.Paths{
 					BaseDir:    "base",
-					DirPattern: "static-path/{{.FileTypeName}}",
+					DirPattern: "static-path/{{.EntryID}}",
 				},
-				fileType: config.FileType{
-					Name:             "foo-note",
+				entry: config.Entry{
+					ID:               "foo-note",
 					CustomDirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
-					FileNamePattern:  "{{.FileTypeName}}.{{.FileExtension}}",
+					FileNamePattern:  "{{.EntryID}}.{{.FileExtension}}",
 					FileExtension:    "md",
 				},
 			},
@@ -104,9 +104,9 @@ func TestConstructFullPath(t *testing.T) {
 					BaseDir:    "base",
 					DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 				},
-				fileType: config.FileType{
-					Name:          "foo-note",
-					SubDirPattern: "{{.FileTypeName}}s",
+				entry: config.Entry{
+					ID:            "foo-note",
+					SubDirPattern: "{{.EntryID}}s",
 				},
 			},
 			want: "base/" + currentYear + "/" + currentMonth + "/" + currentDay + "/" + "foo-notes",
@@ -118,10 +118,10 @@ func TestConstructFullPath(t *testing.T) {
 					BaseDir:    "base",
 					DirPattern: "{{.Year}}/{{.Month}}/{{.Day}}",
 				},
-				fileType: config.FileType{
-					Name:             "foo-note",
+				entry: config.Entry{
+					ID:               "foo-note",
 					CustomDirPattern: "{{.Year}}/{{.Month}}/{{.WeekCommencing}}",
-					SubDirPattern:    "{{.FileTypeName}}s",
+					SubDirPattern:    "{{.EntryID}}s",
 				},
 			},
 			want: "base/" + currentYear + "/" + currentMonth + "/" + weekCommencing.Format("2006-01-02") + "/" + "foo-notes",
@@ -133,11 +133,11 @@ func TestConstructFullPath(t *testing.T) {
 					BaseDir:    "base",
 					DirPattern: "{{.Year}}/{{.Month}}/{{.WeekCommencing}}",
 				},
-				fileType: config.FileType{
-					Name:            "foo-note",
-					SubDirPattern:   "{{.FileTypeName}}s",
+				entry: config.Entry{
+					ID:              "foo-note",
+					SubDirPattern:   "{{.EntryID}}s",
 					FileExtension:   "md",
-					FileNamePattern: "{{.FileTypeName}}-{{.Day}}-{{.Month}}-{{.Year}}.{{.FileExtension}}",
+					FileNamePattern: "{{.EntryID}}-{{.Day}}-{{.Month}}-{{.Year}}.{{.FileExtension}}",
 				},
 			},
 			want: "base/" + currentYear + "/" + currentMonth + "/" + weekCommencing.Format("2006-01-02") + "/" + "foo-notes/foo-note-" + currentDay + "-" + currentMonth + "-" + currentYear + ".md",
@@ -147,9 +147,9 @@ func TestConstructFullPath(t *testing.T) {
 			args: args{
 				paths: config.Paths{
 					BaseDir:    "base",
-					DirPattern: "{{.Year}/{{.Month}}/{{.Day}}/{{.FileTypeName}}",
+					DirPattern: "{{.Year}/{{.Month}}/{{.Day}}/{{.EntryID}}",
 				},
-				fileType: config.FileType{Name: "foo-note"},
+				entry: config.Entry{ID: "foo-note"},
 			},
 			want:    "",
 			wantErr: true,
@@ -157,7 +157,7 @@ func TestConstructFullPath(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual, err := ConstructFullPath(tt.args.paths, tt.args.fileType)
+			actual, err := ConstructFullPath(tt.args.paths, tt.args.entry)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

@@ -2,14 +2,14 @@ package app
 
 // Config contains the configuration for the application
 type Config struct {
-	// DefaultFileType is the default file type (name) to use when creating a new entry
-	DefaultFileType string `yaml:"defaultFileType"`
+	// DefaultEntry: specify the entry id of the desired default entry
+	DefaultEntry string `yaml:"defaultEntry"`
 
 	// DefaultFileExtension is the default file extension to use when creating a new entry
 	DefaultFileExtension string `yaml:"defaultFileExtension,omitempty"`
 
-	// FileTypes is a list of file types
-	FileTypes []FileType `yaml:"fileTypes"`
+	// Entries is a list of entries
+	Entries []Entry `yaml:"entries"`
 
 	// Paths contains the paths to directories used by the application
 	Paths Paths `yaml:"paths"`

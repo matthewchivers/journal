@@ -46,8 +46,8 @@ type TemplateData struct {
 	// WeekNumber is the week number of the current date (e.g. 1)
 	WeekNumber string
 
-	// FileTypeName is the name of the file type (e.g. notes/entry/diary/todo/meeting)
-	FileTypeName string
+	// EntryID is the name of the entry type (e.g. notes/entry/diary/todo/meeting)
+	EntryID string
 
 	// FileExtension is the file extension of the file type (e.g. "md")
 	FileExtension string
@@ -55,7 +55,7 @@ type TemplateData struct {
 
 // PrepareTemplateData creates a new TemplateData struct with the current date and file type
 // If weekCommencing is true, the WeekCommencing date is used to calculate year/month/week number
-func PrepareTemplateData(fileType app.FileType, weekCommencing bool) (TemplateData, error) {
+func PrepareTemplateData(entry app.Entry, weekCommencing bool) (TemplateData, error) {
 	timeNow := time.Now()
 	data := TemplateData{
 		Year:             timeNow.Format("2006"),
@@ -70,8 +70,8 @@ func PrepareTemplateData(fileType app.FileType, weekCommencing bool) (TemplateDa
 		WeekdayNumber:    string(rune(timeNow.Weekday())),
 		WeekCommencing:   caltools.WeekCommencing(timeNow).Format("2006-01-02"),
 		WeekNumber:       string(rune(caltools.WeekOfMonth(timeNow))),
-		FileTypeName:     fileType.Name,
-		FileExtension:    fileType.FileExtension,
+		EntryID:          entry.ID,
+		FileExtension:    entry.FileExtension,
 	}
 
 	// WeekCommencing directories should nest in the same Year/Month as the commencing date.

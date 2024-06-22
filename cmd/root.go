@@ -23,7 +23,7 @@ var rootCmd = &cobra.Command{
 			fmt.Println("Unable to load config file", err)
 			os.Exit(1)
 		}
-		err = config.ValidateConfig(*rawCfg)
+		err = rawCfg.Validate()
 		if err != nil {
 			fmt.Println("Invalid config file:", err)
 			os.Exit(1)

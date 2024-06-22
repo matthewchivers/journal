@@ -4,8 +4,8 @@ import (
 	"errors"
 )
 
-// ValidateConfig checks that the provided configuration is valid
-func ValidateConfig(cfg Config) error {
+// Validate checks that the provided configuration is valid
+func (cfg *Config) Validate() error {
 	if err := validatePaths(cfg.Paths); err != nil {
 		return err
 	}

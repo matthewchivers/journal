@@ -8,7 +8,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// LoadConfig loads the configuration from a file
+// LoadConfig loads the configuration from a file and returns the configuration object
 func LoadConfig(configPath string) (*Config, error) {
 	config := &Config{}
 

@@ -30,13 +30,13 @@ func TestPrepareTemplateData(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    TemplateData
+		want    TemplateModel
 		wantErr bool
 	}{
 		{
 			name: "Test PrepareTemplateData",
 			args: args{EntryID: "notes", FileExtension: "md", weekCommencing: false},
-			want: TemplateData{
+			want: TemplateModel{
 				Year:             currentYear,
 				YearShort:        currentYearShort,
 				Month:            currentMonth,

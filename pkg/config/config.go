@@ -3,12 +3,17 @@ package config
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/matthewchivers/journal/pkg/templating"
 )
 
 // Config contains the configuration for the application
 type Config struct {
+	// launchTime is the time the application was launched
+	launchTime time.Time
+
 	// DefaultEntry: specify the entry id of the desired default entry
 	DefaultEntry string `yaml:"defaultEntry"`
 
@@ -46,17 +51,28 @@ func (cfg *Config) GetEntryPath(entryID string) (string, error) {
 		journalDirPattern = entry.JournalDirOverride
 	}
 
-	journalPath, err := templating.ParsePattern(journalDirPattern, entry.ID, entry.FileExtension)
+	templateModel, err := templating.PrepareTemplateData(cfg.launchTime)
+	if err != nil {
+		return "", fmt.Errorf("failed to prepare template data: %w", err)
+	}
+	templateModel.EntryID = entry.ID
+	templateModel.FileExtension = entry.FileExtension
+
+	if strings.Contains(journalDirPattern, "{{.WeekCommencing}}") {
+		templateModel.AdjustForWeekCommencing(cfg.launchTime)
+	}
+
+	journalPath, err := templateModel.ParsePattern(journalDirPattern)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct journal path: %w", err)
 	}
 
-	nestedPath, err := templating.ParsePattern(entry.Directory, entry.ID, entry.FileExtension)
+	nestedPath, err := templateModel.ParsePattern(entry.Directory)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct nested path: %w", err)
 	}
 
-	fileName, err := templating.ParsePattern(entry.FileName, entry.ID, entry.FileExtension)
+	fileName, err := templateModel.ParsePattern(entry.FileName)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct file name: %w", err)
 	}

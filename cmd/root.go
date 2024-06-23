@@ -3,31 +3,27 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
-	"github.com/matthewchivers/journal/pkg/config"
+	"github.com/matthewchivers/journal/pkg/app"
 	"github.com/spf13/cobra"
 )
 
 var (
 	cfgPath string
-	cfg     *config.Config
+	appCtx  *app.Context
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "journal",
 	Short: "Journal is a simple CLI journaling application",
 	PersistentPreRun: func(_ *cobra.Command, _ []string) {
-		rawCfg, err := config.LoadConfig(cfgPath)
-		if err != nil {
-			fmt.Println("Unable to load config file", err)
+		appCtx = &app.Context{}
+		appCtx.SetLaunchTime(time.Now())
+		if err := loadConfig(); err != nil {
+			fmt.Println("error loading config:", err)
 			os.Exit(1)
 		}
-		err = rawCfg.Validate()
-		if err != nil {
-			fmt.Println("Invalid config file:", err)
-			os.Exit(1)
-		}
-		cfg = rawCfg
 	},
 	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Println("Welcome to Journal CLI. Use 'journal --help' to see available commands.")
@@ -43,11 +39,16 @@ func Execute() error {
 }
 
 func init() {
-	defaultConfigPath, err := config.GetDefaultConfigPath()
-	if err != nil {
-		fmt.Println("Error getting default config path:", err)
-		os.Exit(1)
-	}
+	rootCmd.PersistentFlags().StringVarP(&cfgPath, "config", "c", "", "path to config file")
+}
 
-	rootCmd.PersistentFlags().StringVarP(&cfgPath, "config", "c", defaultConfigPath, "path to config file")
+// loadConfig loads the configuration file
+func loadConfig() error {
+	if err := appCtx.SetConfigPath(cfgPath); err != nil {
+		return err
+	}
+	if err := appCtx.SetupConfig(); err != nil {
+		return err
+	}
+	return nil
 }

@@ -26,4 +26,8 @@ type Entry struct {
 	// TemplateName is the name of the template to use when creating a new entry
 	// (if not specified, the default template will be used)
 	TemplateName string `yaml:"templateName,omitempty"`
+
+	// Topic is a name to be used for templating (e.g. a meeting about a certain topic)
+	// Expect this to be primarily set using cli params, but can be set in the config file
+	Topic string `yaml:"topic,omitempty"`
 }

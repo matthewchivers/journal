@@ -9,24 +9,31 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var topic string
+var (
+	entryIDParam string
+	topicParam   string
+)
 
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new journal entry",
 	Run: func(_ *cobra.Command, _ []string) {
-		templateName := strings.ToLower(cfg.DefaultEntry)
-		if docType != "" {
-			templateName = strings.ToLower(docType)
+		entryID := strings.ToLower(cfg.DefaultEntry)
+		if entryIDParam != "" {
+			entryID = strings.ToLower(entryIDParam)
 		}
-		fmt.Printf("Creating new journal entry using template: %s\n", templateName)
 
-		entryPath, err := cfg.GetEntryPath(templateName)
+		if topicParam != "" {
+			cfg.SetTopicForEntryID(entryID, topicParam)
+		}
+
+		entryPath, err := cfg.GetEntryPath(entryID)
 		if err != nil {
 			fmt.Println("Error getting entry path:", err)
 			os.Exit(1)
 		}
 
+		fmt.Printf("Creating new journal entry using template: %s\n", entryID)
 		if err := fileops.CreateNewFile(entryPath); err != nil {
 			fmt.Println("Error creating file:", err)
 			os.Exit(1)
@@ -35,7 +42,7 @@ var createCmd = &cobra.Command{
 }
 
 func init() {
-	createCmd.PersistentFlags().StringVarP(&docType, "template", "t", "", "document template to use")
-	createCmd.PersistentFlags().StringVarP(&topic, "topic", "p", "", "topic to use for templating")
+	createCmd.PersistentFlags().StringVarP(&entryIDParam, "entry", "e", "", "document template to use")
+	createCmd.PersistentFlags().StringVarP(&topicParam, "topic", "t", "", "topic to use for templating")
 	rootCmd.AddCommand(createCmd)
 }

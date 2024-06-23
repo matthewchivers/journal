@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -42,4 +43,9 @@ func LoadConfig(configPath string) (*Config, error) {
 	}
 
 	return config, nil
+}
+
+// SetTime sets the launch time of the application
+func (cfg *Config) SetTime(time time.Time) {
+	cfg.launchTime = time
 }

@@ -1,6 +1,8 @@
 package templating
 
 import (
+	"bytes"
+	"html/template"
 	"time"
 
 	"github.com/matthewchivers/journal/pkg/caltools"
@@ -54,33 +56,46 @@ type TemplateModel struct {
 
 // PrepareTemplateData creates a new TemplateModel struct with the current date and file type
 // If weekCommencing is true, the WeekCommencing date is used to calculate year/month/week number
-func PrepareTemplateData(entryID string, fileExtension string, weekCommencing bool) (TemplateModel, error) {
-	timeNow := time.Now()
+func PrepareTemplateData(time time.Time) (TemplateModel, error) {
 	data := TemplateModel{
-		Year:             timeNow.Format("2006"),
-		YearShort:        timeNow.Format("06"),
-		Month:            timeNow.Format("01"),
-		MonthName:        timeNow.Month().String(),
-		MonthNameShort:   timeNow.Month().String()[:3],
-		Day:              timeNow.Format("02"),
-		DayOrdinal:       caltools.OrdinalSuffix(timeNow.Day()),
-		WeekdayName:      timeNow.Weekday().String(),
-		WeekdayNameShort: timeNow.Weekday().String()[:3],
-		WeekdayNumber:    string(rune(timeNow.Weekday())),
-		WeekCommencing:   caltools.WeekCommencing(timeNow).Format("2006-01-02"),
-		WeekNumber:       string(rune(caltools.WeekOfMonth(timeNow))),
-		EntryID:          entryID,
-		FileExtension:    fileExtension,
+		Year:             time.Format("2006"),
+		YearShort:        time.Format("06"),
+		Month:            time.Format("01"),
+		MonthName:        time.Month().String(),
+		MonthNameShort:   time.Month().String()[:3],
+		Day:              time.Format("02"),
+		DayOrdinal:       caltools.OrdinalSuffix(time.Day()),
+		WeekdayName:      time.Weekday().String(),
+		WeekdayNameShort: time.Weekday().String()[:3],
+		WeekdayNumber:    string(rune(time.Weekday())),
+		WeekCommencing:   caltools.WeekCommencing(time).Format("2006-01-02"),
+		WeekNumber:       string(rune(caltools.WeekOfMonth(time))),
 	}
-
-	// WeekCommencing directories should nest in the same Year/Month as the commencing date.
-	// e.g. 1st May 2024 is in the 5th Month, but the week commencing is 29th April 2024, so it should be in the 4th Month directory
-	if weekCommencing {
-		wc := caltools.WeekCommencing(timeNow)
-		data.Year = wc.Format("2006")
-		data.Month = wc.Format("01")
-		data.WeekNumber = string(rune(caltools.WeekOfMonth(wc)))
-	}
-
 	return data, nil
+}
+
+func (tm *TemplateModel) AdjustForWeekCommencing(time time.Time) {
+	time = caltools.WeekCommencing(time)
+	time = caltools.WeekCommencing(time)
+	tm.Year = time.Format("2006")
+	tm.Month = time.Format("01")
+	tm.WeekNumber = string(rune(caltools.WeekOfMonth(time)))
+}
+
+// ParsePattern creates a new path for a journal entry based on a path template
+func (tm *TemplateModel) ParsePattern(pattern string) (string, error) {
+	t, err := template.New("path").Parse(pattern)
+	if err != nil {
+		return "", err
+	}
+
+	var templateB bytes.Buffer
+	err = t.Execute(&templateB, tm)
+	if err != nil {
+		return "", err
+	}
+
+	parsedTemplate := templateB.String()
+
+	return parsedTemplate, nil
 }

@@ -23,19 +23,24 @@ var createCmd = &cobra.Command{
 			entryID = strings.ToLower(entryIDParam)
 		}
 
+		if _, err := cfg.GetEntry(entryID); err != nil {
+			fmt.Println("error getting entry:", err)
+			os.Exit(1)
+		}
+
 		if topicParam != "" {
 			cfg.SetTopicForEntryID(entryID, topicParam)
 		}
 
 		entryPath, err := cfg.GetEntryPath(entryID)
 		if err != nil {
-			fmt.Println("Error getting entry path:", err)
+			fmt.Println("error getting entry path:", err)
 			os.Exit(1)
 		}
 
 		fmt.Printf("Creating new journal entry using template: %s\n", entryID)
 		if err := fileops.CreateNewFile(entryPath); err != nil {
-			fmt.Println("Error creating file:", err)
+			fmt.Println("error creating file:", err)
 			os.Exit(1)
 		}
 	},

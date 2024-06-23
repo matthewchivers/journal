@@ -2,8 +2,11 @@ package fileops
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
+	"time"
 
+	"github.com/matthewchivers/journal/pkg/app"
 	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
@@ -105,18 +108,45 @@ func TestCreateNewFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			entry := tt.cfg.Entries[0]
 
-			fullPath, err := tt.cfg.GetEntryPath(entry.ID)
+			appCtx := &app.Context{
+				Config: tt.cfg,
+			}
+
+			appCtx.SetLaunchTime(time.Now())
+
+			err := appCtx.PreparePatternData()
 			assert.NoError(t, err)
 
+			err = appCtx.SetEntryID(entry.ID)
+			assert.NoError(t, err)
+
+			err = appCtx.SetFileName("")
+			assert.NoError(t, err)
+
+			err = appCtx.SetDirectory("")
+			assert.NoError(t, err)
+
+			err = appCtx.SetFileExtension("")
+			assert.NoError(t, err)
+
+			appCtx.SetTopic("")
+
+			directory, err := appCtx.GetEntryDir()
+			assert.NoError(t, err)
+			file, err := appCtx.GetEntryFileName()
+			assert.NoError(t, err)
+
+			path := filepath.Join(directory, file)
+
 			// Main function under test
-			err = CreateNewFile(fullPath)
+			err = CreateNewFile(path)
 			// Assert error handling
 			if tt.expectedError {
 				assert.Error(t, err)
 				assert.Contains(t, err.Error(), tt.expectedErrorMsg)
 			} else {
 				assert.NoError(t, err)
-				_, err := os.Stat(fullPath)
+				_, err := os.Stat(path)
 				assert.NoError(t, err, "file should have been created successfully")
 			}
 		})

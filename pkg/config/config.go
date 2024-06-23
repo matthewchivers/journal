@@ -2,18 +2,10 @@ package config
 
 import (
 	"fmt"
-	"path/filepath"
-	"strings"
-	"time"
-
-	"github.com/matthewchivers/journal/pkg/templating"
 )
 
 // Config contains the configuration for the application
 type Config struct {
-	// launchTime is the time the application was launched
-	launchTime time.Time
-
 	// DefaultEntry: specify the entry id of the desired default entry
 	DefaultEntry string `yaml:"defaultEntry"`
 
@@ -37,65 +29,4 @@ func (cfg *Config) GetEntry(entryID string) (*Entry, error) {
 		}
 	}
 	return nil, fmt.Errorf("entry not found: %s", entryID)
-}
-
-// GetEntryPath returns the directory path for the entry
-func (cfg *Config) GetEntryPath(entryID string) (string, error) {
-	entry, err := cfg.GetEntry(entryID)
-	if err != nil {
-		return "", fmt.Errorf("failed to get entry: %w", err)
-	}
-
-	journalDirPattern := cfg.Paths.JournalDirectory
-	if entry.JournalDirOverride != "" {
-		journalDirPattern = entry.JournalDirOverride
-	}
-
-	templateModel, err := templating.PrepareTemplateData(cfg.launchTime)
-	if err != nil {
-		return "", fmt.Errorf("failed to prepare template data: %w", err)
-	}
-	templateModel.EntryID = entry.ID
-	templateModel.FileExtension = entry.FileExtension
-	templateModel.Topic = entry.Topic
-
-	if strings.Contains(journalDirPattern, "{{.WeekCommencing}}") {
-		templateModel.AdjustForWeekCommencing(cfg.launchTime)
-	}
-
-	journalPath, err := templateModel.ParsePattern(journalDirPattern)
-	if err != nil {
-		return "", fmt.Errorf("failed to construct journal path: %w", err)
-	}
-
-	nestedPath, err := templateModel.ParsePattern(entry.Directory)
-	if err != nil {
-		return "", fmt.Errorf("failed to construct nested path: %w", err)
-	}
-
-	fileName, err := templateModel.ParsePattern(entry.FileName)
-	if err != nil {
-		return "", fmt.Errorf("failed to construct file name: %w", err)
-	}
-
-	fullPath := filepath.Join(cfg.Paths.BaseDirectory, journalPath, nestedPath, fileName)
-
-	return fullPath, nil
-}
-
-func (cfg *Config) TopicExistsForEntryID(entryID string) bool {
-	entry, err := cfg.GetEntry(entryID)
-	if err != nil {
-		return false
-	}
-	return entry.Topic != ""
-}
-
-func (cfg *Config) SetTopicForEntryID(entryID, topic string) error {
-	entry, err := cfg.GetEntry(entryID)
-	if err != nil {
-		return fmt.Errorf("failed to get entry: %w", err)
-	}
-	entry.Topic = topic
-	return nil
 }

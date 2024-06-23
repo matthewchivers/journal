@@ -3,32 +3,45 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/matthewchivers/journal/pkg/fileops"
 	"github.com/spf13/cobra"
 )
 
 var (
-	entryIDParam string
-	topicParam   string
+	entryIDParam       string
+	directoryPathParam string
+	fileExtensionParam string
+	fileNameParam      string
+	topicParam         string
 )
 
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new journal entry",
 	Run: func(_ *cobra.Command, _ []string) {
-		entryID := GetEntryID()
-		SetEntryOverrides(entryID)
-
-		entryPath, err := cfg.GetEntryPath(entryID)
-		if err != nil {
-			fmt.Println("error getting entry path:", err)
+		if err := appCtx.PreparePatternData(); err != nil {
+			fmt.Println("error preparing pattern data:", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Creating new journal entry using template: %s\n", entryID)
-		if err := fileops.CreateNewFile(entryPath); err != nil {
+		if err := setTemplateDependencies(); err != nil {
+			fmt.Println("error setting template dependencies:", err)
+			os.Exit(1)
+		}
+
+		if err := setTemplatedValues(); err != nil {
+			fmt.Println("error setting templated values:", err)
+			os.Exit(1)
+		}
+
+		filePath, err := appCtx.GetFilePath()
+		if err != nil {
+			fmt.Println("error getting file path:", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Creating new journal entry using entry id: %s\n", appCtx.EntryID)
+		if err := fileops.CreateNewFile(filePath); err != nil {
 			fmt.Println("error creating file:", err)
 			os.Exit(1)
 		}
@@ -36,30 +49,35 @@ var createCmd = &cobra.Command{
 }
 
 func init() {
-	createCmd.PersistentFlags().StringVarP(&entryIDParam, "entry", "e", "", "document template to use")
+	createCmd.PersistentFlags().StringVarP(&entryIDParam, "entryid", "id", "", "entry ID to use for templating")
+	createCmd.PersistentFlags().StringVarP(&directoryPathParam, "directory", "d", "", "directory to create the file in")
+	createCmd.PersistentFlags().StringVarP(&fileExtensionParam, "extension", "e", "", "file extension to use")
+	createCmd.PersistentFlags().StringVarP(&fileNameParam, "filename", "f", "", "file name to use")
 	createCmd.PersistentFlags().StringVarP(&topicParam, "topic", "t", "", "topic to use for templating")
 	rootCmd.AddCommand(createCmd)
 }
 
-func GetEntryID() string {
-	entryID := strings.ToLower(cfg.DefaultEntry)
-	if entryIDParam != "" {
-		entryID = strings.ToLower(entryIDParam)
+// setTemplateDependencies sets the values for the template dependencies
+func setTemplateDependencies() error {
+	if err := appCtx.SetEntryID(entryIDParam); err != nil {
+		return err
 	}
-
-	if entryID == "" {
-		fmt.Println("no entry specified")
-		os.Exit(1)
+	if err := appCtx.SetTopic(topicParam); err != nil {
+		return err
 	}
-	if _, err := cfg.GetEntry(entryID); err != nil {
-		fmt.Println("error getting entry:", err)
-		os.Exit(1)
+	if err := appCtx.SetFileExtension(fileExtensionParam); err != nil {
+		return err
 	}
-	return entryID
+	return nil
 }
 
-func SetEntryOverrides(entryID string) {
-	if topicParam != "" {
-		cfg.SetTopicForEntryID(entryID, topicParam)
+// setTemplatedValues sets the values for the templated values
+func setTemplatedValues() error {
+	if err := appCtx.SetFileName(fileNameParam); err != nil {
+		return err
 	}
+	if err := appCtx.SetDirectory(directoryPathParam); err != nil {
+		return err
+	}
+	return nil
 }

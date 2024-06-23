@@ -52,6 +52,9 @@ type TemplateModel struct {
 
 	// FileExtension is the file extension of the file type (e.g. "md")
 	FileExtension string
+
+	// Topic is the name of the topic for the entry (e.g. "project A/B/C")
+	Topic string
 }
 
 // PrepareTemplateData creates a new TemplateModel struct with the current date and file type

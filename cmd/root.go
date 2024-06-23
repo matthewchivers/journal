@@ -11,7 +11,6 @@ import (
 var (
 	cfgPath string
 	cfg     *config.Config
-	docType string
 )
 
 var rootCmd = &cobra.Command{

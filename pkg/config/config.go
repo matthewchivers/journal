@@ -57,6 +57,7 @@ func (cfg *Config) GetEntryPath(entryID string) (string, error) {
 	}
 	templateModel.EntryID = entry.ID
 	templateModel.FileExtension = entry.FileExtension
+	templateModel.Topic = entry.Topic
 
 	if strings.Contains(journalDirPattern, "{{.WeekCommencing}}") {
 		templateModel.AdjustForWeekCommencing(cfg.launchTime)
@@ -80,4 +81,21 @@ func (cfg *Config) GetEntryPath(entryID string) (string, error) {
 	fullPath := filepath.Join(cfg.Paths.BaseDirectory, journalPath, nestedPath, fileName)
 
 	return fullPath, nil
+}
+
+func (cfg *Config) TopicExistsForEntryID(entryID string) bool {
+	entry, err := cfg.GetEntry(entryID)
+	if err != nil {
+		return false
+	}
+	return entry.Topic != ""
+}
+
+func (cfg *Config) SetTopicForEntryID(entryID, topic string) error {
+	entry, err := cfg.GetEntry(entryID)
+	if err != nil {
+		return fmt.Errorf("failed to get entry: %w", err)
+	}
+	entry.Topic = topic
+	return nil
 }

@@ -6,9 +6,9 @@ import (
 	"github.com/matthewchivers/journal/pkg/caltools"
 )
 
-// TemplateData contains the template fields available for use in patterns
+// TemplateModel contains the template fields available for use in patterns
 // patterns can be used for file name and directories in the config file
-type TemplateData struct {
+type TemplateModel struct {
 	// Year is the current year (e.g. 2021)
 	Year string
 
@@ -52,11 +52,11 @@ type TemplateData struct {
 	FileExtension string
 }
 
-// PrepareTemplateData creates a new TemplateData struct with the current date and file type
+// PrepareTemplateData creates a new TemplateModel struct with the current date and file type
 // If weekCommencing is true, the WeekCommencing date is used to calculate year/month/week number
-func PrepareTemplateData(entryID string, fileExtension string, weekCommencing bool) (TemplateData, error) {
+func PrepareTemplateData(entryID string, fileExtension string, weekCommencing bool) (TemplateModel, error) {
 	timeNow := time.Now()
-	data := TemplateData{
+	data := TemplateModel{
 		Year:             timeNow.Format("2006"),
 		YearShort:        timeNow.Format("06"),
 		Month:            timeNow.Format("01"),

@@ -18,19 +18,8 @@ var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new journal entry",
 	Run: func(_ *cobra.Command, _ []string) {
-		entryID := strings.ToLower(cfg.DefaultEntry)
-		if entryIDParam != "" {
-			entryID = strings.ToLower(entryIDParam)
-		}
-
-		if _, err := cfg.GetEntry(entryID); err != nil {
-			fmt.Println("error getting entry:", err)
-			os.Exit(1)
-		}
-
-		if topicParam != "" {
-			cfg.SetTopicForEntryID(entryID, topicParam)
-		}
+		entryID := GetEntryID()
+		SetEntryOverrides(entryID)
 
 		entryPath, err := cfg.GetEntryPath(entryID)
 		if err != nil {
@@ -50,4 +39,27 @@ func init() {
 	createCmd.PersistentFlags().StringVarP(&entryIDParam, "entry", "e", "", "document template to use")
 	createCmd.PersistentFlags().StringVarP(&topicParam, "topic", "t", "", "topic to use for templating")
 	rootCmd.AddCommand(createCmd)
+}
+
+func GetEntryID() string {
+	entryID := strings.ToLower(cfg.DefaultEntry)
+	if entryIDParam != "" {
+		entryID = strings.ToLower(entryIDParam)
+	}
+
+	if entryID == "" {
+		fmt.Println("no entry specified")
+		os.Exit(1)
+	}
+	if _, err := cfg.GetEntry(entryID); err != nil {
+		fmt.Println("error getting entry:", err)
+		os.Exit(1)
+	}
+	return entryID
+}
+
+func SetEntryOverrides(entryID string) {
+	if topicParam != "" {
+		cfg.SetTopicForEntryID(entryID, topicParam)
+	}
 }

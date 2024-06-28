@@ -102,11 +102,17 @@ type Date struct {
 // TemplateModel contains the template fields available for use in patterns
 // patterns can be used for file name and directories in the config file
 type TemplateModel struct {
-	// Date contains the current date
-	Date Date
+	// Year contains information about the current year
+	Year Year
 
-	// Week Commencing date contains the date of the Monday of the week containing the current date
-	WCDate Date
+	// Month contains information about the current month
+	Month Month
+
+	// Day contains information about the current day
+	Day WeekDay
+
+	// WkCom (Week Commencing) date contains the date of the Monday of the week containing the current date
+	WkCom Date
 
 	// EntryID is the name of the entry type (e.g. notes/entry/diary/todo/meeting)
 	EntryID string

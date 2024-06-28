@@ -14,38 +14,20 @@ func PrepareTemplateData(time time.Time) (TemplateModel, error) {
 	weekCommencing := caltools.WeekCommencing(time)
 
 	data := TemplateModel{
-		Date:   PopulateDate(time),
-		WCDate: PopulateDate(weekCommencing),
+		Year:  PopulateYear(time),
+		Month: PopulateMonth(time),
+		Day:   PopulateDay(time),
+		WkCom: PopulateDate(weekCommencing),
 	}
 	return data, nil
 }
 
 // PopulateDate creates a new Date struct with the current date
 func PopulateDate(time time.Time) Date {
-
-	// Get structs that will be filled
-	weekDay := getWeekday(time)
-	yearDay := getYearDay(time)
-	yearWeek := getYearWeek(time, weekDay)
-	month := getMonth(time, weekDay)
-
 	date := Date{
-		Year: Year{
-			Num:    time.Format("2006"),
-			Short:  time.Format("06"),
-			Month:  *month,
-			Week:   *yearWeek,
-			Day:    *yearDay,
-			DaysIn: fmt.Sprintf("%d", caltools.DaysInYear(time)),
-		},
-		Month: *month,
-		Day: WeekDay{
-			Num:   fmt.Sprintf("%d", time.Day()),
-			Pad:   fmt.Sprintf("%02d", time.Day()),
-			Ord:   fmt.Sprintf("%d%s", time.Day(), caltools.OrdinalSuffix(time.Day())),
-			Name:  time.Weekday().String(),
-			Short: time.Weekday().String()[:3],
-		},
+		Year:  PopulateYear(time),
+		Month: PopulateMonth(time),
+		Day:   PopulateDay(time),
 	}
 
 	return date
@@ -69,8 +51,20 @@ func (tm *TemplateModel) ParsePattern(pattern string) (string, error) {
 	return parsedTemplate, nil
 }
 
-// getWeekday populates and returns a pointer to a WeekDay struct
-func getWeekday(time time.Time) *WeekDay {
+// PopulateDay returns a WeekDay struct using the day of the month
+func PopulateDay(time time.Time) WeekDay {
+	wd := &WeekDay{
+		Num:   fmt.Sprintf("%d", time.Day()),
+		Pad:   fmt.Sprintf("%02d", time.Day()),
+		Ord:   fmt.Sprintf("%d%s", time.Day(), caltools.OrdinalSuffix(time.Day())),
+		Name:  time.Weekday().String(),
+		Short: time.Weekday().String()[:3],
+	}
+	return *wd
+}
+
+// populateWeekday returns a WeekDay struct using the day of the week rather than the day of the month
+func populateWeekday(time time.Time) WeekDay {
 	weekday := &WeekDay{
 		Num:   fmt.Sprintf("%d", time.Weekday()),
 		Pad:   fmt.Sprintf("%02d", time.Weekday()),
@@ -78,34 +72,34 @@ func getWeekday(time time.Time) *WeekDay {
 		Name:  time.Weekday().String(),
 		Short: time.Weekday().String()[:3],
 	}
-	return weekday
+	return *weekday
 }
 
-// getYearWeek populates and returns a pointer to a Week struct for the year
-func getYearWeek(time time.Time, weekDay *WeekDay) *Week {
+// getYearWeek populates and returns a Week struct for the year
+func getYearWeek(time time.Time, weekDay WeekDay) Week {
 	_, yearWeekNum := time.ISOWeek()
 	week := &Week{
 		Num: fmt.Sprintf("%d", yearWeekNum),
 		Pad: fmt.Sprintf("%02d", yearWeekNum),
 		Ord: fmt.Sprintf("%d%s", yearWeekNum, caltools.OrdinalSuffix(yearWeekNum)),
-		Day: *weekDay,
+		Day: weekDay,
 	}
-	return week
+	return *week
 }
 
-// getYearDay populates and returns a pointer to a Day struct for the year
-func getYearDay(time time.Time) *Day {
+// getYearDay populates and returns a Day struct for the year
+func getYearDay(time time.Time) Day {
 	yearDayNum := time.YearDay()
 	yearDay := &Day{
 		Num: fmt.Sprintf("%d", yearDayNum),
 		Pad: fmt.Sprintf("%03d", yearDayNum),
 		Ord: fmt.Sprintf("%d%s", yearDayNum, caltools.OrdinalSuffix(yearDayNum)),
 	}
-	return yearDay
+	return *yearDay
 }
 
-// getMonth populates and returns a pointer to a Month struct
-func getMonth(time time.Time, weekDay *WeekDay) *Month {
+// PopulateMonth populates and returns a Month struct
+func PopulateMonth(time time.Time) Month {
 	month := &Month{
 		Num:    time.Format("1"),
 		Pad:    time.Format("01"),
@@ -122,8 +116,27 @@ func getMonth(time time.Time, weekDay *WeekDay) *Month {
 			Num: fmt.Sprintf("%d", caltools.WeekOfMonth(time)),
 			Pad: fmt.Sprintf("%02d", caltools.WeekOfMonth(time)),
 			Ord: fmt.Sprintf("%d%s", caltools.WeekOfMonth(time), caltools.OrdinalSuffix(caltools.WeekOfMonth(time))),
-			Day: *weekDay,
+			Day: populateWeekday(time),
 		},
 	}
-	return month
+	return *month
+}
+
+// PopulateYear populates and returns a Year struct
+func PopulateYear(time time.Time) Year {
+	// Get structs that will be filled
+	weekDay := populateWeekday(time)
+	yearDay := getYearDay(time)
+	yearWeek := getYearWeek(time, weekDay)
+
+	year := &Year{
+		Num:    time.Format("2006"),
+		Short:  time.Format("06"),
+		Month:  PopulateMonth(time),
+		Week:   yearWeek,
+		Day:    yearDay,
+		DaysIn: fmt.Sprintf("%d", caltools.DaysInYear(time)),
+	}
+
+	return *year
 }

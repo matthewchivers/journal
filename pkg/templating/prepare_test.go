@@ -35,12 +35,12 @@ func TestParsePattern(t *testing.T) {
 		{
 			name:     "base",
 			args:     args{},
-			pattern:  "/journal/{{.Date.Year.Num}}/{{.Date.Month.Num}}/{{.Date.Day.Num}}",
+			pattern:  "/journal/{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}",
 			expected: "/journal/2024/6/28",
 		},
 		{
 			name:     "week commencing",
-			pattern:  "/journal/{{.WCDate.Year.Num}}/{{.WCDate.Month.Num}}/{{.WCDate.Day.Num}}",
+			pattern:  "/journal/{{.WkCom.Year.Num}}/{{.WkCom.Month.Num}}/{{.WkCom.Day.Num}}",
 			expected: "/journal/2024/6/24",
 		},
 		{
@@ -50,17 +50,17 @@ func TestParsePattern(t *testing.T) {
 				fileExt: "md",
 				topic:   "bar",
 			},
-			pattern:  "/journal/{{.Date.Year.Num}}/{{.Date.Month.Num}}/{{.Date.Day.Num}}/{{.EntryID}}/{{.Topic}}.{{.FileExt}}",
+			pattern:  "/journal/{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}/{{.EntryID}}/{{.Topic}}.{{.FileExt}}",
 			expected: "/journal/2024/6/28/foo/bar.md",
 		},
 		{
 			name:     "ordinals and other weird combinations",
-			pattern:  "/journal/{{.Date.Year.Num}}/{{.Date.Month.Num}}/{{.Date.Day.Num}}/{{.Date.Month.Ord}}/{{.Date.Year.Week.Ord}}/{{.Date.Day.Ord}}/{{.Date.Year.Day.Ord}}",
+			pattern:  "/journal/{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}/{{.Month.Ord}}/{{.Year.Week.Ord}}/{{.Day.Ord}}/{{.Year.Day.Ord}}",
 			expected: "/journal/2024/6/28/6th/26th/28th/180th",
 		},
 		{
 			name:     "days in",
-			pattern:  "/journal/{{.Date.Year.Num}}/{{.Date.Month.Ord}} of 12 months/{{.Date.Year.Day.Ord}} day of {{.Date.Year.DaysIn}}",
+			pattern:  "/journal/{{.Year.Num}}/{{.Month.Ord}} of 12 months/{{.Year.Day.Ord}} day of {{.Year.DaysIn}}",
 			expected: "/journal/2024/6th of 12 months/180th day of 366",
 		},
 	}
@@ -78,9 +78,9 @@ func TestParsePattern(t *testing.T) {
 	}
 }
 
-func TestGetWeekday(t *testing.T) {
+func TestPopulateWeekday(t *testing.T) {
 	testTime := time.Date(2024, 6, 28, 0, 0, 0, 0, time.UTC)
-	weekday := getWeekday(testTime)
+	weekday := populateWeekday(testTime)
 	assert.Equal(t, "5", weekday.Num)
 	assert.Equal(t, "05", weekday.Pad)
 	assert.Equal(t, "5th", weekday.Ord)
@@ -90,7 +90,7 @@ func TestGetWeekday(t *testing.T) {
 
 func TestGetYearWeek(t *testing.T) {
 	testTime := time.Date(2024, 6, 28, 0, 0, 0, 0, time.UTC)
-	weekDay := getWeekday(testTime)
+	weekDay := populateWeekday(testTime)
 	yearWeek := getYearWeek(testTime, weekDay)
 
 	assert.Equal(t, "26", yearWeek.Num)
@@ -112,10 +112,9 @@ func TestGetYearDay(t *testing.T) {
 	assert.Equal(t, "180th", yearDay.Ord)
 }
 
-func TestGetMonth(t *testing.T) {
+func TestPopulateMonth(t *testing.T) {
 	testTime := time.Date(2024, 6, 28, 0, 0, 0, 0, time.UTC)
-	weekDay := getWeekday(testTime)
-	month := getMonth(testTime, weekDay)
+	month := PopulateMonth(testTime)
 
 	assert.Equal(t, "6", month.Num)
 	assert.Equal(t, "06", month.Pad)

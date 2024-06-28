@@ -26,18 +26,18 @@ defaultEntry: note
 defaultFileExt: md
 entries:
   - id: note
-    fileName: "Note-{{.Day}}-{{.Month}}-{{.Year}}.{{.FileExt}}"
+    fileName: "Note-{{.Day.Pad}}-{{.Month.Pad}}-{{.Year.Short}}.{{.FileExt}}"
     directory: "{{.EntryID}}s"
     schedule:
       frequency: daily
   - id: standup
-    fileName: "{{.WeekdayNameShort}}-{{.Day}}{{.DayOrdinal}}-{{.MonthNameShort}}-{{.YearShort}}.{{.FileExt}}"
-    directory: "{{.EntryID}}s/wc-{{.WeekCommencing}}"
+    fileName: "{{.Day.Short}}-{{.Day.Ord}}-{{.Month.Short}}-{{.Year.Num}}.{{.FileExt}}"
+    directory: "{{.EntryID}}s/wc-{{.WkCom.Day.Pad}}-{{.WkCom.Month.Pad}}-{{.WkCom.Year.Short}}"
     schedule:
       frequency: daily
 paths:
   baseDirectory: "/home/user/journal"
-  journalDirectory: "{{.Year}}/{{.Month}}"
+  journalDirectory: "{{.Year.Num}}/{{.Month.Num}}"
 ```
 
 ### Example Usage & Output

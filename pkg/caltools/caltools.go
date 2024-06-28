@@ -48,3 +48,12 @@ func OrdinalSuffix(day int) string {
 		return "th"
 	}
 }
+
+func DaysInMonth(t time.Time) int {
+	return time.Date(t.Year(), t.Month()+1, 0, 0, 0, 0, 0, t.Location()).Day()
+}
+
+// DaysInYear returns the number of days in the given year.
+func DaysInYear(t time.Time) int {
+	return time.Date(t.Year()+1, 1, 0, 0, 0, 0, 0, t.Location()).YearDay()
+}

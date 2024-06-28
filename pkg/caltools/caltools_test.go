@@ -165,3 +165,86 @@ func TestOrdinalSuffix(t *testing.T) {
 		})
 	}
 }
+
+func TestDaysInYear(t *testing.T) {
+	type args struct {
+		t time.Time
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			name: "1900",
+			args: args{t: time.Date(1900, 1, 1, 0, 0, 0, 0, time.UTC)},
+			want: 365,
+		},
+		{
+			name: "2000",
+			args: args{t: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)},
+			want: 366,
+		},
+		{
+			name: "2024",
+			args: args{t: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)},
+			want: 366,
+		},
+		{
+			name: "2025",
+			args: args{t: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)},
+			want: 365,
+		},
+		{
+			name: "2100",
+			args: args{t: time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC)},
+			want: 365,
+		},
+		{
+			name: "2400",
+			args: args{t: time.Date(2400, 1, 1, 0, 0, 0, 0, time.UTC)},
+			want: 366,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := DaysInYear(tt.args.t); got != tt.want {
+				t.Errorf("DaysInYear() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDaysInMonth(t *testing.T) {
+	type args struct {
+		t time.Time
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			name: "January 2024",
+			args: args{t: time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC)},
+			want: 31,
+		},
+		{
+			name: "February 2024",
+			args: args{t: time.Date(2024, time.February, 1, 0, 0, 0, 0, time.UTC)},
+			want: 29,
+		},
+		{
+			name: "February 2025",
+			args: args{t: time.Date(2025, time.February, 1, 0, 0, 0, 0, time.UTC)},
+			want: 28,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := DaysInMonth(tt.args.t); got != tt.want {
+				t.Errorf("DaysInMonth() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

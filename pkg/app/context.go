@@ -204,22 +204,22 @@ func (ctx *Context) PreparePatternData() error {
 	return nil
 }
 
-// SetFileExtension sets the file extension for the entry
-func (ctx *Context) SetFileExtension(fileExtension string) error {
+// SetFileExt sets the file extension for the entry
+func (ctx *Context) SetFileExt(fileExt string) error {
 	if ctx.TemplateData == nil {
 		return errors.New("template data must be initialised before setting file extension")
 	}
-	if fileExtension != "" {
-		ctx.TemplateData.FileExtension = fileExtension
+	if fileExt != "" {
+		ctx.TemplateData.FileExt = fileExt
 	} else {
 		entry, err := ctx.Config.GetEntry(ctx.EntryID)
 		if err != nil {
 			return err
 		}
-		if entry.FileExtension != "" {
-			ctx.TemplateData.FileExtension = entry.FileExtension
+		if entry.FileExt != "" {
+			ctx.TemplateData.FileExt = entry.FileExt
 		} else {
-			ctx.TemplateData.FileExtension = ctx.Config.DefaultFileExtension
+			ctx.TemplateData.FileExt = ctx.Config.DefaultFileExt
 		}
 	}
 	return nil

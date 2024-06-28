@@ -39,9 +39,9 @@ func TestCreateNewFile(t *testing.T) {
 				},
 				Entries: []config.Entry{
 					{
-						ID:            "foo",
-						FileExtension: "md",
-						FileName:      "{{.EntryID}}.{{.FileExtension}}",
+						ID:       "foo",
+						FileExt:  "md",
+						FileName: "{{.EntryID}}.{{.FileExt}}",
 					},
 				},
 			},
@@ -88,10 +88,10 @@ func TestCreateNewFile(t *testing.T) {
 				},
 				Entries: []config.Entry{
 					{
-						ID:            "foo",
-						FileName:      "{{.EntryID}}.{{.FileExtension}}",
-						Directory:     "{{.EntryID}}s",
-						FileExtension: "md",
+						ID:        "foo",
+						FileName:  "{{.EntryID}}.{{.FileExt}}",
+						Directory: "{{.EntryID}}s",
+						FileExt:   "md",
 					},
 				},
 			},
@@ -126,7 +126,7 @@ func TestCreateNewFile(t *testing.T) {
 			err = appCtx.SetDirectory("")
 			assert.NoError(t, err)
 
-			err = appCtx.SetFileExtension("")
+			err = appCtx.SetFileExt("")
 			assert.NoError(t, err)
 
 			appCtx.SetTopic("")

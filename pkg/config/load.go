@@ -36,8 +36,8 @@ func LoadConfig(configPath string) (*Config, error) {
 	}
 
 	for i := range config.Entries {
-		if config.Entries[i].FileExtension == "" {
-			config.Entries[i].FileExtension = config.DefaultFileExtension
+		if config.Entries[i].FileExt == "" {
+			config.Entries[i].FileExt = config.DefaultFileExt
 		}
 	}
 

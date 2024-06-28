@@ -23,15 +23,15 @@ The configuration file is stored in the user's home directory at `~/.journal/con
 
 ```yaml
 defaultEntry: note
-defaultFileExtension: md
+defaultFileExt: md
 entries:
   - id: note
-    fileName: "Note-{{.Day}}-{{.Month}}-{{.Year}}.{{.FileExtension}}"
+    fileName: "Note-{{.Day}}-{{.Month}}-{{.Year}}.{{.FileExt}}"
     directory: "{{.EntryID}}s"
     schedule:
       frequency: daily
   - id: standup
-    fileName: "{{.WeekdayNameShort}}-{{.Day}}{{.DayOrdinal}}-{{.MonthNameShort}}-{{.YearShort}}.{{.FileExtension}}"
+    fileName: "{{.WeekdayNameShort}}-{{.Day}}{{.DayOrdinal}}-{{.MonthNameShort}}-{{.YearShort}}.{{.FileExt}}"
     directory: "{{.EntryID}}s/wc-{{.WeekCommencing}}"
     schedule:
       frequency: daily

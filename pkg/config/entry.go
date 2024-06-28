@@ -5,8 +5,8 @@ type Entry struct {
 	// ID is the identifier for the entry
 	ID string `yaml:"id"`
 
-	// FileExtension is the file extension to use when creating a new entry
-	FileExtension string `yaml:"fileExtension,omitempty"`
+	// FileExt is the file extension to use when creating a new entry
+	FileExt string `yaml:"fileExt,omitempty"`
 
 	// Schedule contains the schedule for the file type
 	Schedule Schedule `yaml:"schedule,omitempty"`

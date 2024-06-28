@@ -11,7 +11,7 @@ import (
 var (
 	entryIDParam       string
 	directoryPathParam string
-	fileExtensionParam string
+	FileExtParam       string
 	fileNameParam      string
 	topicParam         string
 )
@@ -51,7 +51,7 @@ var createCmd = &cobra.Command{
 func init() {
 	createCmd.PersistentFlags().StringVarP(&entryIDParam, "entryid", "id", "", "entry ID to use for templating")
 	createCmd.PersistentFlags().StringVarP(&directoryPathParam, "directory", "d", "", "directory to create the file in")
-	createCmd.PersistentFlags().StringVarP(&fileExtensionParam, "extension", "e", "", "file extension to use")
+	createCmd.PersistentFlags().StringVarP(&FileExtParam, "extension", "e", "", "file extension to use")
 	createCmd.PersistentFlags().StringVarP(&fileNameParam, "filename", "f", "", "file name to use")
 	createCmd.PersistentFlags().StringVarP(&topicParam, "topic", "t", "", "topic to use for templating")
 	rootCmd.AddCommand(createCmd)
@@ -65,7 +65,7 @@ func setTemplateDependencies() error {
 	if err := appCtx.SetTopic(topicParam); err != nil {
 		return err
 	}
-	if err := appCtx.SetFileExtension(fileExtensionParam); err != nil {
+	if err := appCtx.SetFileExt(FileExtParam); err != nil {
 		return err
 	}
 	return nil

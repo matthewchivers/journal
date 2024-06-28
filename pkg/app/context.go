@@ -144,10 +144,6 @@ func (ctx *Context) GetEntryDir() (string, error) {
 		return "", errors.New("template data must be initialised before getting entry directory")
 	}
 
-	if strings.Contains(journalDirPattern, "{{.WeekCommencing}}") {
-		ctx.TemplateData.AdjustForWeekCommencing(ctx.LaunchTime)
-	}
-
 	journalPath, err := ctx.TemplateData.ParsePattern(journalDirPattern)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct journal path: %w", err)

@@ -48,7 +48,11 @@ type App struct {
 // NewApp creates a new context instance
 func NewApp() *App {
 	app := &App{}
-	log = logger.GetLogger()
+	if logInst, err := logger.GetLogger(); err != nil {
+		fmt.Println("error getting logger:", err)
+	} else {
+		log = logInst
+	}
 	return app
 }
 
@@ -116,11 +120,11 @@ func (app *App) SetEntryID(entryID string) error {
 		return err
 	}
 
+	app.TemplateData.EntryID = app.EntryID
+
 	log.Debug().Str("entry_id_override", entryID).
 		Str("entry_id_final", app.EntryID).
 		Msg("entry id set")
-
-	app.TemplateData.EntryID = app.EntryID
 	return nil
 }
 

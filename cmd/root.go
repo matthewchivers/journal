@@ -24,7 +24,12 @@ var rootCmd = &cobra.Command{
 	Use:   "journal",
 	Short: "Journal is a simple CLI journaling application",
 	PersistentPreRun: func(_ *cobra.Command, _ []string) {
-		setupLogging()
+		err := setupLogging()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
 		app = application.NewApp()
 		log.Info().Msg("Starting Journal CLI")
 		app.SetLaunchTime(time.Now())
@@ -65,7 +70,7 @@ func loadConfig() error {
 }
 
 // setupLogging sets the log level for the application based on the flags provided
-func setupLogging() {
+func setupLogging() error {
 	switch {
 	case logLevelInfo:
 		logger.SetLogLevel(logger.LogLevelInfo)
@@ -81,5 +86,10 @@ func setupLogging() {
 		os.Exit(1)
 	}
 
-	log = logger.GetLogger()
+	log, err = logger.GetLogger()
+	if err != nil {
+		fmt.Println("error getting logger: ", err)
+		return err
+	}
+	return nil
 }

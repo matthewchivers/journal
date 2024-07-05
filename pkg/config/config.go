@@ -2,6 +2,12 @@ package config
 
 import (
 	"fmt"
+
+	"github.com/rs/zerolog"
+)
+
+var (
+	logger *zerolog.Logger
 )
 
 // Config contains the configuration for the application
@@ -22,6 +28,7 @@ type Config struct {
 	UserSettings UserSettings `yaml:"userSettings,omitempty"`
 }
 
+// Entry contains the configuration for an entry
 func (cfg *Config) GetEntry(entryID string) (*Entry, error) {
 	for _, entry := range cfg.Entries {
 		if entry.ID == entryID {
@@ -29,4 +36,9 @@ func (cfg *Config) GetEntry(entryID string) (*Entry, error) {
 		}
 	}
 	return nil, fmt.Errorf("entry not found: %s", entryID)
+}
+
+// SetLogger sets the logger
+func SetLogger(l *zerolog.Logger) {
+	logger = l
 }

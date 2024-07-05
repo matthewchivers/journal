@@ -15,7 +15,7 @@ type Entry struct {
 	Directory string `yaml:"directory,omitempty"`
 
 	// FileName is the pattern to use when creating a file name
-	FileName string `yaml:"fileName,omitempty"`
+	FileName string `yaml:"fileName"`
 
 	// JournalDirOverride is an override pattern for the main directory
 	JournalDirOverride string `yaml:"journalDirOverride,omitempty"`

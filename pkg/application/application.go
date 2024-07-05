@@ -3,9 +3,12 @@ package application
 import (
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/rs/zerolog"
 
 	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/matthewchivers/journal/pkg/templating"
@@ -36,13 +39,43 @@ type App struct {
 	// TemplateData is the data used to populate the templating patterns
 	TemplateData *templating.TemplateModel
 
+	// Logger is a zerolog logger
+	logger *zerolog.Logger
+
 	// entry is the entry configuration (used for convenience)
 	entry *config.Entry
 }
 
 // NewApp creates a new context instance
 func NewApp() *App {
+	app := &App{}
+	// setup logger
+	app.SetLogger(getDefaultLogger())
+	app.SetLaunchTime(time.Now())
 	return &App{}
+}
+
+// SetLogger sets the logger for the application
+func (app *App) SetLogger(logger *zerolog.Logger) {
+	app.logger = logger
+}
+
+// GetLogger returns the logger for the application
+// If no logger is set, a default logger is returned
+func (app *App) GetLogger() *zerolog.Logger {
+	if app.logger == nil {
+		app.logger = getDefaultLogger()
+	}
+	return app.logger
+}
+
+// getDefaultLogger sets the default logger for the application
+func getDefaultLogger() *zerolog.Logger {
+	// Human readable console logger
+	consoleWriter := zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}
+
+	newLogger := zerolog.New(consoleWriter.Out).With().Timestamp().Logger()
+	return &newLogger
 }
 
 // SetLaunchTime sets the launch time of the application

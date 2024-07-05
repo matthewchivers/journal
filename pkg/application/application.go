@@ -88,13 +88,24 @@ func (app *App) SetConfigPath(cfgPathOverride string) error {
 	if cfgPathOverride != "" {
 		app.ConfigPath = cfgPathOverride
 	} else {
-		defaultConfigPath, err := config.GetDefaultConfigPath()
+		appHome, err := GetAppHomePath()
 		if err != nil {
 			return err
 		}
+		defaultConfigPath := filepath.Join(appHome, "config.yaml")
 		app.ConfigPath = defaultConfigPath
 	}
 	return nil
+}
+
+// GetAppHomePath returns the path to the application
+func GetAppHomePath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	appHomePath := filepath.Join(home, ".journal")
+	return appHomePath, nil
 }
 
 // SetupConfig loads the configuration from the specified path or the default path if specified path is empty

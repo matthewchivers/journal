@@ -37,6 +37,7 @@ var rootCmd = &cobra.Command{
 			fmt.Println("error loading config:", err)
 			os.Exit(1)
 		}
+		log.Info().Msg("Configuration loaded")
 	},
 	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Println("Welcome to Journal CLI. Use 'journal --help' to see available commands.")

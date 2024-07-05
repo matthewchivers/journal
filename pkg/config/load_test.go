@@ -48,7 +48,7 @@ entries:
      days: [1,3,5]
    templateName: "log.tmpl"
 paths:
-  templatesDir: "~/.journal/customtemplates"
+  templatesDirectory: "~/.journal/customtemplates"
   baseDirectory: "~/journals"
   journalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}/"
 userSettings:
@@ -67,9 +67,9 @@ userSettings:
 					},
 				},
 				Paths: Paths{
-					TemplatesDir:     "~/.journal/customtemplates",
-					BaseDirectory:    "~/journals",
-					JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}/",
+					TemplatesDirectory: "~/.journal/customtemplates",
+					BaseDirectory:      "~/journals",
+					JournalDirectory:   "{{.Year}}/{{.Month}}/{{.Day}}/",
 				},
 				UserSettings: UserSettings{
 					Timezone: "Europe/London",
@@ -85,7 +85,7 @@ entries:
   - id: "task"
 paths:
   baseDirectory: "journals"
-  templatesDir
+  templatesDirectory
 `,
 			want:    nil,
 			wantErr: true,

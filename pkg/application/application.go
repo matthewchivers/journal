@@ -1,4 +1,4 @@
-package app
+package application
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ import (
 	"github.com/matthewchivers/journal/pkg/templating"
 )
 
-type Context struct {
+type App struct {
 	// LaunchTime is the time the application was launched
 	LaunchTime time.Time
 
@@ -40,142 +40,142 @@ type Context struct {
 	entry *config.Entry
 }
 
-// NewContext creates a new context instance
-func NewContext() *Context {
-	return &Context{}
+// NewApp creates a new context instance
+func NewApp() *App {
+	return &App{}
 }
 
 // SetLaunchTime sets the launch time of the application
-func (ctx *Context) SetLaunchTime(launchTime time.Time) {
-	ctx.LaunchTime = launchTime
+func (app *App) SetLaunchTime(launchTime time.Time) {
+	app.LaunchTime = launchTime
 }
 
 // SetConfigPath sets the path to the configuration file
-func (ctx *Context) SetConfigPath(cfgPathOverride string) error {
+func (app *App) SetConfigPath(cfgPathOverride string) error {
 	if cfgPathOverride != "" {
-		ctx.ConfigPath = cfgPathOverride
+		app.ConfigPath = cfgPathOverride
 	} else {
 		defaultConfigPath, err := config.GetDefaultConfigPath()
 		if err != nil {
 			return err
 		}
-		ctx.ConfigPath = defaultConfigPath
+		app.ConfigPath = defaultConfigPath
 	}
 	return nil
 }
 
 // SetupConfig loads the configuration from the specified path or the default path if specified path is empty
-func (ctx *Context) SetupConfig() error {
+func (app *App) SetupConfig() error {
 	// Load the configuration
-	cfg, err := config.LoadConfig(ctx.ConfigPath)
+	cfg, err := config.LoadConfig(app.ConfigPath)
 	if err != nil {
 		return err
 	}
 	if err := cfg.Validate(); err != nil {
 		return err
 	}
-	ctx.Config = cfg
+	app.Config = cfg
 	return nil
 }
 
 // SetEntryID sets the entry ID for the context
 // If entryID is empty, the default entry is used
-func (ctx *Context) SetEntryID(entryID string) error {
-	if ctx.Config == nil {
+func (app *App) SetEntryID(entryID string) error {
+	if app.Config == nil {
 		return errors.New("config must be loaded before setting entry ID")
 	}
-	if ctx.TemplateData == nil {
+	if app.TemplateData == nil {
 		return errors.New("pattern data must be initialised before setting entry id")
 	}
 	if entryID != "" {
-		ctx.EntryID = strings.ToLower(entryID)
+		app.EntryID = strings.ToLower(entryID)
 	} else {
-		ctx.EntryID = strings.ToLower(ctx.Config.DefaultEntry)
+		app.EntryID = strings.ToLower(app.Config.DefaultEntry)
 	}
-	if ctx.EntryID == "" {
+	if app.EntryID == "" {
 		return errors.New("no entry specified")
 	}
-	if _, err := ctx.Config.GetEntry(ctx.EntryID); err != nil {
+	if _, err := app.Config.GetEntry(app.EntryID); err != nil {
 		return err
 	}
 
-	ctx.TemplateData.EntryID = ctx.EntryID
+	app.TemplateData.EntryID = app.EntryID
 	return nil
 }
 
-func (ctx *Context) SetDirectory(dir string) error {
+func (app *App) SetDirectory(dir string) error {
 	if dir == "" {
-		entryPath, err := ctx.GetEntryDir()
+		entryPath, err := app.GetEntryDir()
 		if err != nil {
 			return err
 		}
-		ctx.Directory = entryPath
+		app.Directory = entryPath
 	} else {
-		ctx.Directory = dir
+		app.Directory = dir
 	}
 	return nil
 }
 
 // SetFileName sets the file name for the entry
 // If fileName is empty, the default file name is retrieved
-func (ctx *Context) SetFileName(fileName string) error {
-	if ctx.TemplateData == nil {
+func (app *App) SetFileName(fileName string) error {
+	if app.TemplateData == nil {
 		return errors.New("pattern data must be initialised before setting file name")
 	}
 	if fileName != "" {
-		ctx.FileName = fileName
+		app.FileName = fileName
 	} else {
-		fileName, err := ctx.GetEntryFileName()
+		fileName, err := app.GetEntryFileName()
 		if err != nil {
 			return err
 		}
-		ctx.FileName = fileName
+		app.FileName = fileName
 	}
 	return nil
 }
 
-func (ctx *Context) GetEntryDir() (string, error) {
-	entry, err := ctx.GetEntry()
+func (app *App) GetEntryDir() (string, error) {
+	entry, err := app.GetEntry()
 	if err != nil {
 		return "", err
 	}
 
-	journalDirPattern := ctx.Config.Paths.JournalDirectory
+	journalDirPattern := app.Config.Paths.JournalDirectory
 	if entry.JournalDirOverride != "" {
 		journalDirPattern = entry.JournalDirOverride
 	}
 
-	if ctx.TemplateData == nil {
+	if app.TemplateData == nil {
 		return "", errors.New("template data must be initialised before getting entry directory")
 	}
 
-	journalPath, err := ctx.TemplateData.ParsePattern(journalDirPattern)
+	journalPath, err := app.TemplateData.ParsePattern(journalDirPattern)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct journal path: %w", err)
 	}
 
-	nestedPath, err := ctx.TemplateData.ParsePattern(entry.Directory)
+	nestedPath, err := app.TemplateData.ParsePattern(entry.Directory)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct nested path: %w", err)
 	}
 
-	fullPath := filepath.Join(ctx.Config.Paths.BaseDirectory, journalPath, nestedPath)
+	fullPath := filepath.Join(app.Config.Paths.BaseDirectory, journalPath, nestedPath)
 
 	return fullPath, nil
 }
 
 // GetEntryFileName returns the file name for the entry
-func (ctx *Context) GetEntryFileName() (string, error) {
-	entry, err := ctx.GetEntry()
+func (app *App) GetEntryFileName() (string, error) {
+	entry, err := app.GetEntry()
 	if err != nil {
 		return "", err
 	}
 
-	if ctx.TemplateData == nil {
+	if app.TemplateData == nil {
 		return "", errors.New("pattern data must be initialised before getting entry file name")
 	}
 
-	fileName, err := ctx.TemplateData.ParsePattern(entry.FileName)
+	fileName, err := app.TemplateData.ParsePattern(entry.FileName)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct file name: %w", err)
 	}
@@ -184,83 +184,83 @@ func (ctx *Context) GetEntryFileName() (string, error) {
 }
 
 // GetFilePath returns the full path to the file
-func (ctx *Context) GetFilePath() (string, error) {
-	if ctx.FilePath == "" {
-		if ctx.Directory == "" {
+func (app *App) GetFilePath() (string, error) {
+	if app.FilePath == "" {
+		if app.Directory == "" {
 			return "", errors.New("directory must be set before getting file path")
 		}
-		if ctx.FileName == "" {
+		if app.FileName == "" {
 			return "", errors.New("file name must be set before getting file path")
 		}
-		ctx.FilePath = filepath.Join(ctx.Directory, ctx.FileName)
+		app.FilePath = filepath.Join(app.Directory, app.FileName)
 	}
-	return ctx.FilePath, nil
+	return app.FilePath, nil
 }
 
-func (ctx *Context) PreparePatternData() error {
-	if ctx.LaunchTime.IsZero() {
+func (app *App) PreparePatternData() error {
+	if app.LaunchTime.IsZero() {
 		return errors.New("launch time must be set before preparing pattern data")
 	}
-	templateModel, err := templating.PrepareTemplateData(ctx.LaunchTime)
+	templateModel, err := templating.PrepareTemplateData(app.LaunchTime)
 	if err != nil {
 		return fmt.Errorf("failed to prepare template data: %w", err)
 	}
-	ctx.TemplateData = &templateModel
+	app.TemplateData = &templateModel
 	return nil
 }
 
 // SetFileExt sets the file extension for the entry
-func (ctx *Context) SetFileExt(fileExt string) error {
-	if ctx.TemplateData == nil {
+func (app *App) SetFileExt(fileExt string) error {
+	if app.TemplateData == nil {
 		return errors.New("template data must be initialised before setting file extension")
 	}
 	if fileExt != "" {
-		ctx.TemplateData.FileExt = fileExt
+		app.TemplateData.FileExt = fileExt
 	} else {
-		entry, err := ctx.Config.GetEntry(ctx.EntryID)
+		entry, err := app.Config.GetEntry(app.EntryID)
 		if err != nil {
 			return err
 		}
 		if entry.FileExt != "" {
-			ctx.TemplateData.FileExt = entry.FileExt
+			app.TemplateData.FileExt = entry.FileExt
 		} else {
-			ctx.TemplateData.FileExt = ctx.Config.DefaultFileExt
+			app.TemplateData.FileExt = app.Config.DefaultFileExt
 		}
 	}
 	return nil
 }
 
 // SetTopic sets the topic for the entry
-func (ctx *Context) SetTopic(topic string) error {
-	if ctx.TemplateData == nil {
+func (app *App) SetTopic(topic string) error {
+	if app.TemplateData == nil {
 		return errors.New("pattern data must be initialised before setting topic")
 	}
 	if topic != "" {
-		ctx.TemplateData.Topic = topic
+		app.TemplateData.Topic = topic
 	} else {
-		entry, err := ctx.GetEntry()
+		entry, err := app.GetEntry()
 		if err != nil {
 			return err
 		}
-		ctx.TemplateData.Topic = entry.Topic
+		app.TemplateData.Topic = entry.Topic
 	}
 	return nil
 }
 
-func (ctx *Context) GetEntry() (*config.Entry, error) {
-	if ctx.entry != nil {
-		return ctx.entry, nil
+func (app *App) GetEntry() (*config.Entry, error) {
+	if app.entry != nil {
+		return app.entry, nil
 	}
-	if ctx.Config == nil {
+	if app.Config == nil {
 		return nil, errors.New("config must be loaded before getting entry")
 	}
-	if ctx.EntryID == "" {
+	if app.EntryID == "" {
 		return nil, errors.New("entry ID must be set before getting entry")
 	}
-	ent, err := ctx.Config.GetEntry(ctx.EntryID)
+	ent, err := app.Config.GetEntry(app.EntryID)
 	if err != nil {
 		return nil, err
 	}
-	ctx.entry = ent
+	app.entry = ent
 	return ent, nil
 }

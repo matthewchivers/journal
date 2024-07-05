@@ -20,7 +20,7 @@ var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new journal entry",
 	Run: func(_ *cobra.Command, _ []string) {
-		if err := appCtx.PreparePatternData(); err != nil {
+		if err := app.PreparePatternData(); err != nil {
 			fmt.Println("error preparing pattern data:", err)
 			os.Exit(1)
 		}
@@ -35,12 +35,12 @@ var createCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		filePath, err := appCtx.GetFilePath()
+		filePath, err := app.GetFilePath()
 		if err != nil {
 			fmt.Println("error getting file path:", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Creating new journal entry using entry id: %s\n", appCtx.EntryID)
+		fmt.Printf("Creating new journal entry using entry id: %s\n", app.EntryID)
 		if err := fileops.CreateNewFile(filePath); err != nil {
 			fmt.Println("error creating file:", err)
 			os.Exit(1)
@@ -59,13 +59,13 @@ func init() {
 
 // setTemplateDependencies sets the values for the template dependencies
 func setTemplateDependencies() error {
-	if err := appCtx.SetEntryID(entryIDParam); err != nil {
+	if err := app.SetEntryID(entryIDParam); err != nil {
 		return err
 	}
-	if err := appCtx.SetTopic(topicParam); err != nil {
+	if err := app.SetTopic(topicParam); err != nil {
 		return err
 	}
-	if err := appCtx.SetFileExt(FileExtParam); err != nil {
+	if err := app.SetFileExt(FileExtParam); err != nil {
 		return err
 	}
 	return nil
@@ -73,10 +73,10 @@ func setTemplateDependencies() error {
 
 // setTemplatedValues sets the values for the templated values
 func setTemplatedValues() error {
-	if err := appCtx.SetFileName(fileNameParam); err != nil {
+	if err := app.SetFileName(fileNameParam); err != nil {
 		return err
 	}
-	if err := appCtx.SetDirectory(directoryPathParam); err != nil {
+	if err := app.SetDirectory(directoryPathParam); err != nil {
 		return err
 	}
 	return nil

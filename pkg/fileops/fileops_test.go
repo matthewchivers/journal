@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matthewchivers/journal/pkg/app"
+	app "github.com/matthewchivers/journal/pkg/application"
 	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
@@ -108,7 +108,7 @@ func TestCreateNewFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			entry := tt.cfg.Entries[0]
 
-			appCtx := &app.Context{
+			appCtx := &app.App{
 				Config: tt.cfg,
 			}
 

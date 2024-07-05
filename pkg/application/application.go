@@ -3,25 +3,18 @@ package application
 import (
 	"errors"
 	"fmt"
-	"io"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/matthewchivers/journal/pkg/config"
+	"github.com/matthewchivers/journal/pkg/logger"
+	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/matthewchivers/journal/pkg/templating"
 	"github.com/rs/zerolog"
 )
 
-// Struct with iota log levels
-type LogLevel int
-
-const (
-	LogLevelDefault LogLevel = iota
-	LogLevelInfo    LogLevel = iota
-	LogLevelDebug   LogLevel = iota
-)
+var log *zerolog.Logger
 
 type App struct {
 	// LaunchTime is the time the application was launched
@@ -48,15 +41,6 @@ type App struct {
 	// TemplateData is the data used to populate the templating patterns
 	TemplateData *templating.TemplateModel
 
-	// LoggingPath is the path to the log file
-	LoggingPath string
-
-	// logLevel is the log level for the application
-	logLevel LogLevel
-
-	// Logger is a zerolog logger
-	logger *zerolog.Logger
-
 	// entry is the entry configuration (used for convenience)
 	entry *config.Entry
 }
@@ -64,101 +48,31 @@ type App struct {
 // NewApp creates a new context instance
 func NewApp() *App {
 	app := &App{}
+	log = logger.GetLogger()
 	return app
-}
-
-// SetLoggingPath sets the path to the log file
-func (app *App) SetLoggingPath(logPath string) error {
-	if logPath != "" {
-		app.LoggingPath = logPath
-	} else {
-		appHome, err := app.GetAppHomePath()
-		if err != nil {
-			return err
-		}
-		app.LoggingPath = filepath.Join(appHome, "journal.log")
-	}
-	return nil
-}
-
-// SetLogLevel sets the log level for the application
-func (app *App) SetLogLevel(logLevel LogLevel) {
-	app.logLevel = logLevel
-}
-
-// SetDefaultLogger sets the default logger for the application
-func (app *App) SetDefaultLogger() {
-	switch app.logLevel {
-	case LogLevelDefault:
-		zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	case LogLevelInfo:
-		zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	case LogLevelDebug:
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	}
-
-	writers := []io.Writer{}
-
-	if app.logLevel >= LogLevelInfo {
-		// Human readable console logger
-		consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
-		writers = append(writers, consoleWriter)
-	}
-
-	// Structured logging to file
-	file, err := os.OpenFile(app.LoggingPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Printf("error creating log file: %q\n", app.LoggingPath)
-		fmt.Println("failed to create log file:", err)
-	}
-	fileWriter := zerolog.New(file).With().Timestamp().Logger().Output(file)
-
-	writers = append(writers, fileWriter)
-
-	multiWriter := zerolog.MultiLevelWriter(writers...)
-	multiLogger := zerolog.New(multiWriter).With().Timestamp().Logger()
-	app.logger = &multiLogger
-
-	app.logger.Debug().Str("log_level", app.logger.GetLevel().String()).
-		Str("log_path", app.LoggingPath).
-		Msg("created logger")
-}
-
-// SetLogger sets the logger for the application
-func (app *App) SetLogger(logger *zerolog.Logger) {
-	app.logger = logger
-}
-
-// GetLogger returns the logger for the application
-// If no logger is set, a default logger is returned
-func (app *App) GetLogger() *zerolog.Logger {
-	if app.logger == nil {
-		app.SetDefaultLogger()
-	}
-	return app.logger
 }
 
 // SetLaunchTime sets the launch time of the application
 func (app *App) SetLaunchTime(launchTime time.Time) {
 	app.LaunchTime = launchTime
-	app.logger.Debug().Str("launch_time", launchTime.String()).Msg("launch time set")
+	log.Debug().Str("launch_time", launchTime.String()).Msg("launch time set")
 }
 
 // SetConfigPath sets the path to the configuration file
 func (app *App) SetConfigPath(cfgPath string) error {
 	if cfgPath != "" {
 		app.ConfigPath = cfgPath
-		app.logger.Debug().Str("config_path_override", cfgPath).
+		log.Debug().Str("config_path_override", cfgPath).
 			Str("config_path_final", app.ConfigPath).
 			Msg("config path set")
 	} else {
-		appHome, err := app.GetAppHomePath()
+		appHome, err := paths.GetAppHomePath()
 		if err != nil {
 			return err
 		}
 		defaultConfigPath := filepath.Join(appHome, "config.yaml")
 		app.ConfigPath = defaultConfigPath
-		app.logger.Debug().Str("app_home_path", appHome).
+		log.Debug().Str("app_home_path", appHome).
 			Str("config_path_default", defaultConfigPath).
 			Str("config_path_final", app.ConfigPath).
 			Msg("config path default calculated")
@@ -166,20 +80,9 @@ func (app *App) SetConfigPath(cfgPath string) error {
 	return nil
 }
 
-// GetAppHomePath returns the path to the application
-func (app *App) GetAppHomePath() (string, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-	appHomePath := filepath.Join(home, ".journal")
-	return appHomePath, nil
-}
-
 // SetupConfig loads the configuration from the specified path or the default path if specified path is empty
 func (app *App) SetupConfig() error {
 	// Load the configuration
-	config.SetLogger(app.GetLogger())
 	cfg, err := config.LoadConfig(app.ConfigPath)
 	if err != nil {
 		return err
@@ -188,7 +91,7 @@ func (app *App) SetupConfig() error {
 		return err
 	}
 	app.Config = cfg
-	app.logger.Debug().Msg("config loaded and validated")
+	log.Debug().Msg("config loaded and validated")
 	return nil
 }
 
@@ -213,7 +116,7 @@ func (app *App) SetEntryID(entryID string) error {
 		return err
 	}
 
-	app.logger.Debug().Str("entry_id_override", entryID).
+	log.Debug().Str("entry_id_override", entryID).
 		Str("entry_id_final", app.EntryID).
 		Msg("entry id set")
 
@@ -233,7 +136,7 @@ func (app *App) SetDirectory(dir string) error {
 	} else {
 		app.Directory = dir
 	}
-	app.logger.Debug().Str("directory_override", dir).
+	log.Debug().Str("directory_override", dir).
 		Str("directory_final", app.Directory).
 		Msg("directory set")
 	return nil
@@ -254,7 +157,7 @@ func (app *App) SetFileName(fileName string) error {
 		}
 		app.FileName = fileName
 	}
-	app.logger.Debug().Str("file_name_override", fileName).
+	log.Debug().Str("file_name_override", fileName).
 		Str("file_name_final", app.FileName).
 		Msg("file name set")
 	return nil
@@ -268,7 +171,7 @@ func (app *App) GetEntryDir() (string, error) {
 
 	if app.TemplateData == nil {
 		err := errors.New("template data must be initialised before getting entry directory")
-		app.logger.Err(err).Msg("")
+		log.Err(err).Msg("")
 		return "", err
 	}
 
@@ -289,7 +192,7 @@ func (app *App) GetEntryDir() (string, error) {
 
 	fullPath := filepath.Join(app.Config.Paths.BaseDirectory, journalPath, nestedPath)
 
-	app.logger.Debug().Str("base_dir", app.Config.Paths.BaseDirectory).
+	log.Debug().Str("base_dir", app.Config.Paths.BaseDirectory).
 		Str("journal_dir_pattern", app.Config.Paths.JournalDirectory).
 		Str("journal_dir_pattern_override", entry.JournalDirOverride).
 		Str("journal_dir_pattern_final", journalDirPattern).
@@ -317,7 +220,7 @@ func (app *App) GetEntryFileName() (string, error) {
 		return "", fmt.Errorf("failed to construct file name: %w", err)
 	}
 
-	app.logger.Debug().Str("entry_id", app.EntryID).
+	log.Debug().Str("entry_id", app.EntryID).
 		Str("file_name_pattern", entry.FileName).
 		Str("file_name_parsed", fileName).
 		Msg("entry file name calculated from config")
@@ -334,7 +237,7 @@ func (app *App) GetFilePath() (string, error) {
 			return "", errors.New("file name must be set before getting file path")
 		}
 		app.FilePath = filepath.Join(app.Directory, app.FileName)
-		app.logger.Debug().Str("directory", app.Directory).
+		log.Debug().Str("directory", app.Directory).
 			Str("file_name", app.FileName).
 			Str("file_path", app.FilePath).
 			Msg("file path calculated from directory and file name")

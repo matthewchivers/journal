@@ -40,6 +40,11 @@ type Context struct {
 	entry *config.Entry
 }
 
+// NewContext creates a new context instance
+func NewContext() *Context {
+	return &Context{}
+}
+
 // SetLaunchTime sets the launch time of the application
 func (ctx *Context) SetLaunchTime(launchTime time.Time) {
 	ctx.LaunchTime = launchTime

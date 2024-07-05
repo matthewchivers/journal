@@ -49,11 +49,11 @@ var createCmd = &cobra.Command{
 }
 
 func init() {
-	createCmd.PersistentFlags().StringVarP(&entryIDParam, "entryid", "id", "", "entry ID to use for templating")
-	createCmd.PersistentFlags().StringVarP(&directoryPathParam, "directory", "d", "", "directory to create the file in")
-	createCmd.PersistentFlags().StringVarP(&FileExtParam, "extension", "e", "", "file extension to use")
-	createCmd.PersistentFlags().StringVarP(&fileNameParam, "filename", "f", "", "file name to use")
-	createCmd.PersistentFlags().StringVarP(&topicParam, "topic", "t", "", "topic to use for templating")
+	createCmd.PersistentFlags().StringVar(&entryIDParam, "id", "", "entry ID to use for templating")
+	createCmd.PersistentFlags().StringVar(&directoryPathParam, "directory", "", "directory to create the file in")
+	createCmd.PersistentFlags().StringVar(&FileExtParam, "extension", "", "file extension to use")
+	createCmd.PersistentFlags().StringVar(&fileNameParam, "filename", "", "file name to use")
+	createCmd.PersistentFlags().StringVar(&topicParam, "topic", "", "topic to use for templating")
 	rootCmd.AddCommand(createCmd)
 }
 

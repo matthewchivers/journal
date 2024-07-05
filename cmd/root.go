@@ -6,12 +6,17 @@ import (
 	"time"
 
 	"github.com/matthewchivers/journal/pkg/application"
+	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 )
 
 var (
-	cfgPath string
-	app     *application.App
+	cfgPath          string
+	loggingPathParam string
+	logLevelInfo     bool
+	logLevelDebug    bool
+	app              *application.App
+	logger           *zerolog.Logger
 )
 
 var rootCmd = &cobra.Command{
@@ -19,6 +24,8 @@ var rootCmd = &cobra.Command{
 	Short: "Journal is a simple CLI journaling application",
 	PersistentPreRun: func(_ *cobra.Command, _ []string) {
 		app = application.NewApp()
+		setupLogging()
+		logger.Info().Msg("Starting Journal CLI")
 		app.SetLaunchTime(time.Now())
 		if err := loadConfig(); err != nil {
 			fmt.Println("error loading config:", err)
@@ -39,7 +46,10 @@ func Execute() error {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&cfgPath, "config", "c", "", "path to config file")
+	rootCmd.PersistentFlags().StringVar(&cfgPath, "config", "", "path to config file")
+	rootCmd.PersistentFlags().StringVar(&loggingPathParam, "logpath", "", "path to log file")
+	rootCmd.PersistentFlags().BoolVar(&logLevelInfo, "info", false, "set log level to info")
+	rootCmd.PersistentFlags().BoolVar(&logLevelDebug, "debug", false, "set log level to debug")
 }
 
 // loadConfig loads the configuration file
@@ -51,4 +61,24 @@ func loadConfig() error {
 		return err
 	}
 	return nil
+}
+
+// setupLogging sets the log level for the application based on the flags provided
+func setupLogging() {
+	switch {
+	case logLevelInfo:
+		app.SetLogLevel(application.LogLevelInfo)
+	case logLevelDebug:
+		app.SetLogLevel(application.LogLevelDebug)
+	default:
+		app.SetLogLevel(application.LogLevelDefault)
+	}
+
+	err := app.SetLoggingPath(loggingPathParam)
+	if err != nil {
+		fmt.Println("error setting logging path:", err)
+		os.Exit(1)
+	}
+
+	logger = app.GetLogger()
 }

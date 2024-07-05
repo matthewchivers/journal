@@ -3,15 +3,24 @@ package application
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/rs/zerolog"
-
 	"github.com/matthewchivers/journal/pkg/config"
 	"github.com/matthewchivers/journal/pkg/templating"
+	"github.com/rs/zerolog"
+)
+
+// Struct with iota log levels
+type LogLevel int
+
+const (
+	LogLevelDefault LogLevel = iota
+	LogLevelInfo    LogLevel = iota
+	LogLevelDebug   LogLevel = iota
 )
 
 type App struct {
@@ -39,6 +48,12 @@ type App struct {
 	// TemplateData is the data used to populate the templating patterns
 	TemplateData *templating.TemplateModel
 
+	// LoggingPath is the path to the log file
+	LoggingPath string
+
+	// logLevel is the log level for the application
+	logLevel LogLevel
+
 	// Logger is a zerolog logger
 	logger *zerolog.Logger
 
@@ -49,10 +64,60 @@ type App struct {
 // NewApp creates a new context instance
 func NewApp() *App {
 	app := &App{}
-	// setup logger
-	app.SetLogger(getDefaultLogger())
-	app.SetLaunchTime(time.Now())
-	return &App{}
+	return app
+}
+
+// SetLoggingPath sets the path to the log file
+func (app *App) SetLoggingPath(logPath string) error {
+	if logPath != "" {
+		app.LoggingPath = logPath
+	} else {
+		appHome, err := GetAppHomePath()
+		if err != nil {
+			return err
+		}
+		app.LoggingPath = filepath.Join(appHome, "journal.log")
+	}
+	return nil
+}
+
+// SetLogLevel sets the log level for the application
+func (app *App) SetLogLevel(logLevel LogLevel) {
+	app.logLevel = logLevel
+}
+
+// SetDefaultLogger sets the default logger for the application
+func (app *App) SetDefaultLogger() {
+	switch app.logLevel {
+	case LogLevelDefault:
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	case LogLevelInfo:
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	case LogLevelDebug:
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
+
+	writers := []io.Writer{}
+
+	if app.logLevel >= LogLevelInfo {
+		// Human readable console logger
+		consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+		writers = append(writers, consoleWriter)
+	}
+
+	// Structured logging to file
+	file, err := os.OpenFile(app.LoggingPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Printf("error creating log file: %q\n", app.LoggingPath)
+		fmt.Println("failed to create log file:", err)
+	}
+	fileWriter := zerolog.New(file).With().Timestamp().Logger().Output(file)
+
+	writers = append(writers, fileWriter)
+
+	multiWriter := zerolog.MultiLevelWriter(writers...)
+	multiLogger := zerolog.New(multiWriter).With().Timestamp().Logger()
+	app.logger = &multiLogger
 }
 
 // SetLogger sets the logger for the application
@@ -64,18 +129,9 @@ func (app *App) SetLogger(logger *zerolog.Logger) {
 // If no logger is set, a default logger is returned
 func (app *App) GetLogger() *zerolog.Logger {
 	if app.logger == nil {
-		app.logger = getDefaultLogger()
+		app.SetDefaultLogger()
 	}
 	return app.logger
-}
-
-// getDefaultLogger sets the default logger for the application
-func getDefaultLogger() *zerolog.Logger {
-	// Human readable console logger
-	consoleWriter := zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}
-
-	newLogger := zerolog.New(consoleWriter.Out).With().Timestamp().Logger()
-	return &newLogger
 }
 
 // SetLaunchTime sets the launch time of the application

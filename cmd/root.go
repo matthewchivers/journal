@@ -18,7 +18,7 @@ var rootCmd = &cobra.Command{
 	Use:   "journal",
 	Short: "Journal is a simple CLI journaling application",
 	PersistentPreRun: func(_ *cobra.Command, _ []string) {
-		appCtx = &app.Context{}
+		appCtx = app.NewContext()
 		appCtx.SetLaunchTime(time.Now())
 		if err := loadConfig(); err != nil {
 			fmt.Println("error loading config:", err)

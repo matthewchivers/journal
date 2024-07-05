@@ -84,6 +84,10 @@ func InitLogger() error {
 	if logLevel >= LogLevelInfo {
 		// Human readable console logger
 		consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+		consoleWriter.FormatMessage = func(i interface{}) string {
+			return fmt.Sprintf("*** %s ****", i)
+		}
+
 		writers = append(writers, consoleWriter)
 	}
 

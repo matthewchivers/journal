@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/matthewchivers/journal/pkg/fileops"
+	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 )
 
@@ -20,6 +21,13 @@ var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new journal entry",
 	Run: func(_ *cobra.Command, _ []string) {
+		log.Debug().Dict("flags/params", zerolog.Dict().
+			Str("entry_id", entryIDParam).
+			Str("directory", directoryPathParam).
+			Str("extension", FileExtParam).
+			Str("filename", fileNameParam).
+			Str("topic", topicParam),
+		).Msg("creating new journal entry wwith the 'create' command")
 		if err := app.PreparePatternData(); err != nil {
 			fmt.Println("error preparing pattern data:", err)
 			os.Exit(1)
@@ -40,7 +48,9 @@ var createCmd = &cobra.Command{
 			fmt.Println("error getting file path:", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Creating new journal entry using entry id: %s\n", app.EntryID)
+		log.Info().Str("file_path", filePath).
+			Str("entry_id", app.EntryID).
+			Msg("Creating new journal entry")
 		if err := fileops.CreateNewFile(filePath); err != nil {
 			fmt.Println("error creating file:", err)
 			os.Exit(1)

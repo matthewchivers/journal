@@ -66,9 +66,6 @@ func (app *App) SetLaunchTime(launchTime time.Time) {
 func (app *App) SetConfigPath(cfgPath string) error {
 	if cfgPath != "" {
 		app.ConfigPath = cfgPath
-		log.Debug().Str("config_path_override", cfgPath).
-			Str("config_path_final", app.ConfigPath).
-			Msg("config path set")
 	} else {
 		appHome, err := paths.GetAppHomePath()
 		if err != nil {
@@ -76,10 +73,6 @@ func (app *App) SetConfigPath(cfgPath string) error {
 		}
 		defaultConfigPath := filepath.Join(appHome, "config.yaml")
 		app.ConfigPath = defaultConfigPath
-		log.Debug().Str("app_home_path", appHome).
-			Str("config_path_default", defaultConfigPath).
-			Str("config_path_final", app.ConfigPath).
-			Msg("config path default calculated")
 	}
 	return nil
 }
@@ -122,9 +115,6 @@ func (app *App) SetEntryID(entryID string) error {
 
 	app.TemplateData.EntryID = app.EntryID
 
-	log.Debug().Str("entry_id_override", entryID).
-		Str("entry_id_final", app.EntryID).
-		Msg("entry id set")
 	return nil
 }
 
@@ -140,9 +130,6 @@ func (app *App) SetDirectory(dir string) error {
 	} else {
 		app.Directory = dir
 	}
-	log.Debug().Str("directory_override", dir).
-		Str("directory_final", app.Directory).
-		Msg("directory set")
 	return nil
 }
 
@@ -184,28 +171,28 @@ func (app *App) GetEntryDir() (string, error) {
 		journalDirPattern = entry.JournalDirOverride
 	}
 
-	journalPath, err := app.TemplateData.ParsePattern(journalDirPattern)
+	journalDirectory, err := app.TemplateData.ParsePattern(journalDirPattern)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct journal path: %w", err)
 	}
 
-	nestedPath, err := app.TemplateData.ParsePattern(entry.Directory)
+	entryDirectory, err := app.TemplateData.ParsePattern(entry.Directory)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct nested path: %w", err)
 	}
 
-	fullPath := filepath.Join(app.Config.Paths.BaseDirectory, journalPath, nestedPath)
+	fullDirectory := filepath.Join(app.Config.Paths.BaseDirectory, journalDirectory, entryDirectory)
 
 	log.Debug().Str("base_dir", app.Config.Paths.BaseDirectory).
 		Str("journal_dir_pattern", app.Config.Paths.JournalDirectory).
 		Str("journal_dir_pattern_override", entry.JournalDirOverride).
 		Str("journal_dir_pattern_final", journalDirPattern).
-		Str("journal_dir_pattern_parsed", journalPath).
+		Str("journal_dir_pattern_parsed", journalDirectory).
 		Str("entry_dir_pattern", entry.Directory).
-		Str("entry_dir_pattern_parsed", nestedPath).
-		Str("full_path", fullPath).Msg("entry directory calculation")
+		Str("entry_dir_pattern_parsed", entryDirectory).
+		Str("full_directory path", fullDirectory).Msg("entry directory calculation (basedir/journaldir/entrydir)")
 
-	return fullPath, nil
+	return fullDirectory, nil
 }
 
 // GetEntryFileName returns the file name for the entry
@@ -227,7 +214,7 @@ func (app *App) GetEntryFileName() (string, error) {
 	log.Debug().Str("entry_id", app.EntryID).
 		Str("file_name_pattern", entry.FileName).
 		Str("file_name_parsed", fileName).
-		Msg("entry file name calculated from config")
+		Msg("entry filename calculation")
 	return fileName, nil
 }
 

@@ -5,21 +5,21 @@ import (
 	"os"
 	"time"
 
-	"github.com/matthewchivers/journal/pkg/app"
+	"github.com/matthewchivers/journal/pkg/application"
 	"github.com/spf13/cobra"
 )
 
 var (
 	cfgPath string
-	appCtx  *app.Context
+	app     *application.App
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "journal",
 	Short: "Journal is a simple CLI journaling application",
 	PersistentPreRun: func(_ *cobra.Command, _ []string) {
-		appCtx = app.NewContext()
-		appCtx.SetLaunchTime(time.Now())
+		app = application.NewApp()
+		app.SetLaunchTime(time.Now())
 		if err := loadConfig(); err != nil {
 			fmt.Println("error loading config:", err)
 			os.Exit(1)
@@ -44,10 +44,10 @@ func init() {
 
 // loadConfig loads the configuration file
 func loadConfig() error {
-	if err := appCtx.SetConfigPath(cfgPath); err != nil {
+	if err := app.SetConfigPath(cfgPath); err != nil {
 		return err
 	}
-	if err := appCtx.SetupConfig(); err != nil {
+	if err := app.SetupConfig(); err != nil {
 		return err
 	}
 	return nil

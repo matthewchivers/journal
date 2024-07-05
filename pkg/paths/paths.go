@@ -6,14 +6,13 @@ import (
 )
 
 var (
-	// AppHomePath is the path to the application
-	AppHomePath string
+	appHomePath string
 )
 
 // GetAppHomePath returns the path to the application
 func GetAppHomePath() (string, error) {
-	if AppHomePath != "" {
-		return AppHomePath, nil
+	if appHomePath != "" {
+		return appHomePath, nil
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -21,4 +20,9 @@ func GetAppHomePath() (string, error) {
 	}
 	appHomePath := filepath.Join(home, ".journal")
 	return appHomePath, nil
+}
+
+// SetAppHomePath sets the application home path
+func SetAppHomePath(path string) {
+	appHomePath = path
 }

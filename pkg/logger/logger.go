@@ -17,6 +17,7 @@ import (
 type LogLevel int
 
 const (
+	notSet          LogLevel = iota
 	LogLevelDefault LogLevel = iota
 	LogLevelInfo    LogLevel = iota
 	LogLevelDebug   LogLevel = iota
@@ -29,11 +30,14 @@ var (
 )
 
 // GetLogger returns the logger instance
-func GetLogger() *zerolog.Logger {
+func GetLogger() (*zerolog.Logger, error) {
 	if loggerInstance == nil {
-		InitLogger()
+		err := InitLogger()
+		if err != nil {
+			return nil, err
+		}
 	}
-	return loggerInstance
+	return loggerInstance, nil
 }
 
 // SetLogger sets the logger instance
@@ -61,7 +65,11 @@ func SetLogLevel(level LogLevel) {
 }
 
 // InitLogger initializes the logger
-func InitLogger() {
+func InitLogger() error {
+	if logLevel == notSet {
+		return fmt.Errorf("log level not set")
+	}
+
 	switch logLevel {
 	case LogLevelDefault:
 		zerolog.SetGlobalLevel(zerolog.InfoLevel)
@@ -96,4 +104,5 @@ func InitLogger() {
 	loggerInstance.Debug().Str("log_level", loggerInstance.GetLevel().String()).
 		Str("log_path", loggingPath).
 		Msg("created logger")
+	return nil
 }

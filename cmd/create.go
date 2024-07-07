@@ -21,7 +21,7 @@ var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new journal entry",
 	Run: func(_ *cobra.Command, _ []string) {
-		log.Debug().Dict("flags/params", zerolog.Dict().
+		log.Debug().Dict("flags_and_params", zerolog.Dict().
 			Str("entry_id", entryIDParam).
 			Str("directory", directoryPathParam).
 			Str("extension", FileExtParam).

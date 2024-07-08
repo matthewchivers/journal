@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/matthewchivers/journal/pkg/fileops"
@@ -19,7 +18,7 @@ var (
 
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Short: "Create a new journal entry",
+	Short: "create a new journal entry",
 	Run: func(_ *cobra.Command, _ []string) {
 		log.Debug().Dict("flags_and_params", zerolog.Dict().
 			Str("entry_id", entryIDParam).
@@ -27,32 +26,32 @@ var createCmd = &cobra.Command{
 			Str("extension", FileExtParam).
 			Str("filename", fileNameParam).
 			Str("topic", topicParam),
-		).Msg("creating new journal entry wwith the 'create' command")
+		).Msg("creating new journal entry with the 'create' command")
 		if err := app.PreparePatternData(); err != nil {
-			fmt.Println("error preparing pattern data:", err)
+			log.Err(err).Msg("error preparing pattern data")
 			os.Exit(1)
 		}
 
 		if err := setTemplateDependencies(); err != nil {
-			fmt.Println("error setting template dependencies:", err)
+			log.Err(err).Msg("error setting template dependencies")
 			os.Exit(1)
 		}
 
 		if err := setTemplatedValues(); err != nil {
-			fmt.Println("error setting templated values:", err)
+			log.Err(err).Msg("error setting templated values")
 			os.Exit(1)
 		}
 
 		filePath, err := app.GetFilePath()
 		if err != nil {
-			fmt.Println("error getting file path:", err)
+			log.Err(err).Msg("error getting file path")
 			os.Exit(1)
 		}
 		log.Info().Str("file_path", filePath).
 			Str("entry_id", app.EntryID).
-			Msg("Creating new journal entry")
+			Msg("creating new journal entry")
 		if err := fileops.CreateNewFile(filePath); err != nil {
-			fmt.Println("error creating file:", err)
+			log.Err(err).Msg("error creating file")
 			os.Exit(1)
 		}
 	},

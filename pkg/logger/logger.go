@@ -27,6 +27,7 @@ var (
 	loggerInstance *zerolog.Logger
 	loggingPath    string
 	logLevel       LogLevel
+	logJSON        bool
 )
 
 // GetLogger returns the logger instance
@@ -68,6 +69,11 @@ func SetLogLevel(level LogLevel) {
 	logLevel = level
 }
 
+// SetLogJSON sets the JSON flag
+func SetLogJSON(json bool) {
+	logJSON = json
+}
+
 // InitLogger initializes the logger
 func InitLogger(lvl LogLevel) error {
 	logLevel = lvl
@@ -83,29 +89,14 @@ func InitLogger(lvl LogLevel) error {
 
 	writers := []io.Writer{}
 
-	if logLevel >= LogLevelInfo {
-		// Human readable console logger
-		consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
-		consoleWriter.FormatMessage = func(i interface{}) string {
-			return fmt.Sprintf("*** %s ****", i)
-		}
+	cw := getConsoleWriter()
+	writers = append(writers, cw)
 
-		writers = append(writers, consoleWriter)
-	}
-
-	if loggingPath == "" {
-		if err := SetLoggingPath(""); err != nil {
-			return fmt.Errorf("error setting logging path: %q", err)
-		}
-	}
-	// Structured logging to file
-	file, err := os.OpenFile(loggingPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	fw, err := getFileWriter()
 	if err != nil {
-		return fmt.Errorf("error creating log file: %q with error %q", loggingPath, err)
+		return fmt.Errorf("error getting file writer: %q", err)
 	}
-	fileWriter := zerolog.New(file).With().Timestamp().Logger().Output(file)
-
-	writers = append(writers, fileWriter)
+	writers = append(writers, fw)
 
 	multiWriter := zerolog.MultiLevelWriter(writers...)
 	multiLogger := zerolog.New(multiWriter).With().Timestamp().Logger()
@@ -115,4 +106,38 @@ func InitLogger(lvl LogLevel) error {
 		Str("log_path", loggingPath).
 		Msg("created logger")
 	return nil
+}
+
+// getConsoleWriter returns the console writer
+func getConsoleWriter() io.Writer {
+	var iow io.Writer
+	if logLevel >= LogLevelInfo {
+		if logJSON {
+			iow = os.Stdout
+		} else {
+			// Human readable console logger
+			consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+			consoleWriter.FormatMessage = func(i interface{}) string {
+				return fmt.Sprintf("*** %s ****", i)
+			}
+			iow = consoleWriter
+		}
+	}
+	return iow
+}
+
+func getFileWriter() (io.Writer, error) {
+	// Structured logging to file
+	if loggingPath == "" {
+		if err := SetLoggingPath(""); err != nil {
+			return nil, fmt.Errorf("error setting logging path: %q", err)
+		}
+	}
+
+	file, err := os.OpenFile(loggingPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return nil, fmt.Errorf("error creating log file: %q with error %q", loggingPath, err)
+	}
+	fileWriter := zerolog.New(file).With().Timestamp().Logger().Output(file)
+	return fileWriter, nil
 }

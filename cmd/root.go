@@ -16,13 +16,14 @@ var (
 	loggingPathParam string
 	logLevelInfo     bool
 	logLevelDebug    bool
+	logJSON          bool
 	app              *application.App
 	log              *zerolog.Logger
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "journal",
-	Short: "Journal is a simple CLI journaling application",
+	Short: "journal is a simple cli journaling application",
 	PersistentPreRun: func(_ *cobra.Command, _ []string) {
 		err := setupLogging()
 		if err != nil {
@@ -36,16 +37,22 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		log.Info().Msg("Starting Journal CLI")
+		log.Info().Msg("starting journal cli")
+		log.Debug().Str("config_path", cfgPath).
+			Str("log_path", loggingPathParam).
+			Bool("info", logLevelInfo).
+			Bool("debug", logLevelDebug).
+			Bool("json", logJSON).
+			Msg("config path set")
 		app.SetLaunchTime(time.Now())
 		if err := loadConfig(); err != nil {
 			log.Err(err).Msg("error loading config")
 			os.Exit(1)
 		}
-		log.Info().Msg("Configuration loaded")
+		log.Info().Msg("configuration loaded")
 	},
 	Run: func(_ *cobra.Command, _ []string) {
-		fmt.Println("Welcome to Journal CLI. Use 'journal --help' to see available commands.")
+		fmt.Println("welcome to journal cli: use 'journal --help' to see available commands")
 	},
 }
 
@@ -62,6 +69,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&loggingPathParam, "logpath", "", "path to log file")
 	rootCmd.PersistentFlags().BoolVar(&logLevelInfo, "info", false, "set log level to info")
 	rootCmd.PersistentFlags().BoolVar(&logLevelDebug, "debug", false, "set log level to debug")
+	rootCmd.PersistentFlags().BoolVar(&logJSON, "logjson", false, "set log output to JSON format")
 }
 
 // loadConfig loads the configuration file
@@ -85,6 +93,8 @@ func setupLogging() error {
 	default:
 		logger.SetLogLevel(logger.LogLevelDefault)
 	}
+
+	logger.SetLogJSON(logJSON)
 
 	err := logger.SetLoggingPath(loggingPathParam)
 	if err != nil {

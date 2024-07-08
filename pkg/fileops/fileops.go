@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/rs/zerolog/log"
 )
 
 // CreateNewFile creates a new file based on the provided configuration and document template name
@@ -24,7 +26,7 @@ func CreateNewFile(filePath string) error {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
 	defer file.Close()
-	fmt.Printf("New file created: %s\n", filePath)
+	log.Info().Str("file_path", filePath).Msg("created a new file")
 	return nil
 }
 

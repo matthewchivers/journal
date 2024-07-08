@@ -3,11 +3,12 @@ package config
 import (
 	"fmt"
 
+	"github.com/matthewchivers/journal/pkg/logger"
 	"github.com/rs/zerolog"
 )
 
 var (
-	logger *zerolog.Logger
+	log *zerolog.Logger
 )
 
 // Config contains the configuration for the application
@@ -28,6 +29,16 @@ type Config struct {
 	UserSettings UserSettings `yaml:"userSettings,omitempty"`
 }
 
+// NewConfig creates a new Config object
+func NewConfig() (*Config, error) {
+	newLogger, err := logger.GetLogger()
+	if err != nil {
+		return nil, err
+	}
+	log = newLogger
+	return &Config{}, nil
+}
+
 // Entry contains the configuration for an entry
 func (cfg *Config) GetEntry(entryID string) (*Entry, error) {
 	for _, entry := range cfg.Entries {
@@ -36,9 +47,4 @@ func (cfg *Config) GetEntry(entryID string) (*Entry, error) {
 		}
 	}
 	return nil, fmt.Errorf("entry not found: %s", entryID)
-}
-
-// SetLogger sets the logger
-func SetLogger(l *zerolog.Logger) {
-	logger = l
 }

@@ -30,9 +30,10 @@ var (
 )
 
 // GetLogger returns the logger instance
+// If the logger instance is not set, it will be initialized with the default log level
 func GetLogger() (*zerolog.Logger, error) {
 	if loggerInstance == nil {
-		err := InitLogger()
+		err := InitLogger(LogLevelDefault)
 		if err != nil {
 			return nil, err
 		}
@@ -65,10 +66,8 @@ func SetLogLevel(level LogLevel) {
 }
 
 // InitLogger initializes the logger
-func InitLogger() error {
-	if logLevel == notSet {
-		return fmt.Errorf("log level not set")
-	}
+func InitLogger(lvl LogLevel) error {
+	logLevel = lvl
 
 	switch logLevel {
 	case LogLevelDefault:
@@ -91,11 +90,15 @@ func InitLogger() error {
 		writers = append(writers, consoleWriter)
 	}
 
+	if loggingPath == "" {
+		if err := SetLoggingPath(""); err != nil {
+			return fmt.Errorf("error setting logging path: %q", err)
+		}
+	}
 	// Structured logging to file
 	file, err := os.OpenFile(loggingPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		fmt.Printf("error creating log file: %q\n", loggingPath)
-		fmt.Println("failed to create log file:", err)
+		return fmt.Errorf("error creating log file: %q with error %q", loggingPath, err)
 	}
 	fileWriter := zerolog.New(file).With().Timestamp().Logger().Output(file)
 

@@ -46,14 +46,14 @@ type App struct {
 }
 
 // NewApp creates a new context instance
-func NewApp() *App {
+func NewApp() (*App, error) {
 	app := &App{}
 	if logInst, err := logger.GetLogger(); err != nil {
-		fmt.Println("error getting logger:", err)
+		return nil, fmt.Errorf("error getting logger: %w", err)
 	} else {
 		log = logInst
 	}
-	return app
+	return app, nil
 }
 
 // SetLaunchTime sets the launch time of the application
@@ -80,8 +80,11 @@ func (app *App) SetConfigPath(cfgPath string) error {
 // SetupConfig loads the configuration from the specified path or the default path if specified path is empty
 func (app *App) SetupConfig() error {
 	// Load the configuration
-	cfg, err := config.LoadConfig(app.ConfigPath)
+	cfg, err := config.NewConfig()
 	if err != nil {
+		return err
+	}
+	if err := cfg.LoadConfig(app.ConfigPath); err != nil {
 		return err
 	}
 	if err := cfg.Validate(); err != nil {

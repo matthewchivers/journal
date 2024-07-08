@@ -41,8 +41,8 @@ type App struct {
 	// TemplateData is the data used to populate the templating patterns
 	TemplateData *templating.TemplateModel
 
-	// entry is the entry configuration (used for convenience)
-	entry *config.Entry
+	// targetEntry is the targetEntry configuration (used for convenience)
+	targetEntry *config.Entry
 }
 
 // NewApp creates a new context instance
@@ -112,7 +112,7 @@ func (app *App) SetEntryID(entryID string) error {
 	if app.EntryID == "" {
 		return errors.New("no entry specified")
 	}
-	if _, err := app.Config.GetEntry(app.EntryID); err != nil {
+	if _, err := app.Config.FetchEntryByID(app.EntryID); err != nil {
 		return err
 	}
 
@@ -125,7 +125,7 @@ func (app *App) SetEntryID(entryID string) error {
 // If dir is empty, the directory is calculated from the entry configuration
 func (app *App) SetDirectory(dir string) error {
 	if dir == "" {
-		entryPath, err := app.GetEntryDir()
+		entryPath, err := app.CalculateEntryDir()
 		if err != nil {
 			return err
 		}
@@ -157,8 +157,10 @@ func (app *App) SetFileName(fileName string) error {
 	return nil
 }
 
-func (app *App) GetEntryDir() (string, error) {
-	entry, err := app.GetEntry()
+// CalculateEntryDir calculates and returns the directory for the entry
+// Does not set the directory in the context
+func (app *App) CalculateEntryDir() (string, error) {
+	entry, err := app.GetTargetEntry()
 	if err != nil {
 		return "", err
 	}
@@ -199,8 +201,12 @@ func (app *App) GetEntryDir() (string, error) {
 }
 
 // GetEntryFileName returns the file name for the entry
+// If the file name is not set, the file name is calculated from the entry configuration
 func (app *App) GetEntryFileName() (string, error) {
-	entry, err := app.GetEntry()
+	if app.FileName != "" {
+		return app.FileName, nil
+	}
+	entry, err := app.GetTargetEntry()
 	if err != nil {
 		return "", err
 	}
@@ -222,23 +228,27 @@ func (app *App) GetEntryFileName() (string, error) {
 }
 
 // GetFilePath returns the full path to the file
+// If the file path is not set, it is calculated from the directory and file name
 func (app *App) GetFilePath() (string, error) {
-	if app.FilePath == "" {
-		if app.Directory == "" {
-			return "", errors.New("directory must be set before getting file path")
-		}
-		if app.FileName == "" {
-			return "", errors.New("file name must be set before getting file path")
-		}
-		app.FilePath = filepath.Join(app.Directory, app.FileName)
-		log.Debug().Str("directory", app.Directory).
-			Str("file_name", app.FileName).
-			Str("file_path", app.FilePath).
-			Msg("file path calculated from directory and file name")
+	if app.FilePath != "" {
+		return app.FilePath, nil
 	}
+	if app.Directory == "" {
+		return "", errors.New("directory must be set before getting file path")
+	}
+	if app.FileName == "" {
+		return "", errors.New("file name must be set before getting file path")
+	}
+	app.FilePath = filepath.Join(app.Directory, app.FileName)
+	log.Debug().Str("directory", app.Directory).
+		Str("file_name", app.FileName).
+		Str("file_path", app.FilePath).
+		Msg("file path calculated from directory and file name")
 	return app.FilePath, nil
 }
 
+// PreparePatternData prepares the pattern data for the application
+// This must be called before parsing any patterns
 func (app *App) PreparePatternData() error {
 	if app.LaunchTime.IsZero() {
 		return errors.New("launch time must be set before preparing pattern data")
@@ -253,6 +263,8 @@ func (app *App) PreparePatternData() error {
 }
 
 // SetFileExt sets the file extension for the entry
+// If fileExt is empty, the file extension is calculated from the configuration
+// (entry, or default if entry does not specify an extension)
 func (app *App) SetFileExt(fileExt string) error {
 	if app.TemplateData == nil {
 		return errors.New("template data must be initialised before setting file extension")
@@ -260,7 +272,7 @@ func (app *App) SetFileExt(fileExt string) error {
 	if fileExt != "" {
 		app.TemplateData.FileExt = fileExt
 	} else {
-		entry, err := app.Config.GetEntry(app.EntryID)
+		entry, err := app.GetTargetEntry()
 		if err != nil {
 			return err
 		}
@@ -281,7 +293,7 @@ func (app *App) SetTopic(topic string) error {
 	if topic != "" {
 		app.TemplateData.Topic = topic
 	} else {
-		entry, err := app.GetEntry()
+		entry, err := app.GetTargetEntry()
 		if err != nil {
 			return err
 		}
@@ -290,9 +302,11 @@ func (app *App) SetTopic(topic string) error {
 	return nil
 }
 
-func (app *App) GetEntry() (*config.Entry, error) {
-	if app.entry != nil {
-		return app.entry, nil
+// GetTargetEntry returns the target entry configuration
+// If the target entry is not already set, it is fetched from the configuration
+func (app *App) GetTargetEntry() (*config.Entry, error) {
+	if app.targetEntry != nil {
+		return app.targetEntry, nil
 	}
 	if app.Config == nil {
 		return nil, errors.New("config must be loaded before getting entry")
@@ -300,10 +314,10 @@ func (app *App) GetEntry() (*config.Entry, error) {
 	if app.EntryID == "" {
 		return nil, errors.New("entry ID must be set before getting entry")
 	}
-	ent, err := app.Config.GetEntry(app.EntryID)
+	ent, err := app.Config.FetchEntryByID(app.EntryID)
 	if err != nil {
 		return nil, err
 	}
-	app.entry = ent
+	app.targetEntry = ent
 	return ent, nil
 }

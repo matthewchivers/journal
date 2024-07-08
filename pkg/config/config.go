@@ -11,7 +11,9 @@ var (
 	log *zerolog.Logger
 )
 
-// Config contains the configuration for the application
+// Config contains the configuration for the application (user settings, paths, entry types, etc.)
+// The configuration is not intended to be modified during the application's lifecycle after the yaml
+// file has been loaded in (values that may change should be stored in the App struct)
 type Config struct {
 	// DefaultEntry: specify the entry id of the desired default entry
 	DefaultEntry string `yaml:"defaultEntry"`
@@ -29,7 +31,7 @@ type Config struct {
 	UserSettings UserSettings `yaml:"userSettings,omitempty"`
 }
 
-// NewConfig creates a new Config object
+// NewConfig creates and returns a new Config object
 func NewConfig() (*Config, error) {
 	newLogger, err := logger.GetLogger()
 	if err != nil {
@@ -39,8 +41,8 @@ func NewConfig() (*Config, error) {
 	return &Config{}, nil
 }
 
-// Entry contains the configuration for an entry
-func (cfg *Config) GetEntry(entryID string) (*Entry, error) {
+// FetchEntryByID retrieves an entry by its ID
+func (cfg *Config) FetchEntryByID(entryID string) (*Entry, error) {
 	for _, entry := range cfg.Entries {
 		if entry.ID == entryID {
 			return &entry, nil

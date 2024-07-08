@@ -4,8 +4,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/matthewchivers/journal/pkg/logger"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -93,17 +94,23 @@ paths:
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tempLogger := zerolog.New(os.Stdout).With().Timestamp().Logger()
+			logger.SetLogger(&tempLogger)
+
 			tempFile, err := os.CreateTemp("", "config-*.yaml")
-			require.NoError(t, err)
+			assert.NoError(t, err)
 			defer os.Remove(tempFile.Name())
 
 			_, err = tempFile.WriteString(tt.yamlData)
-			require.NoError(t, err)
+			assert.NoError(t, err)
 
 			err = tempFile.Close()
-			require.NoError(t, err)
+			assert.NoError(t, err)
 
-			got, err := LoadConfig(tempFile.Name())
+			gotConfig, err := NewConfig()
+			assert.NoError(t, err)
+
+			err = gotConfig.LoadConfig(tempFile.Name())
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -114,7 +121,7 @@ paths:
 				return
 			}
 
-			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.want, gotConfig)
 		})
 	}
 }

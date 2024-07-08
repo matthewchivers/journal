@@ -30,11 +30,16 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		app = application.NewApp()
+		app, err = application.NewApp()
+		if err != nil {
+			log.Err(err).Msg("error creating application context store")
+			os.Exit(1)
+		}
+
 		log.Info().Msg("Starting Journal CLI")
 		app.SetLaunchTime(time.Now())
 		if err := loadConfig(); err != nil {
-			fmt.Println("error loading config:", err)
+			log.Err(err).Msg("error loading config")
 			os.Exit(1)
 		}
 		log.Info().Msg("Configuration loaded")

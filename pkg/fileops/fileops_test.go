@@ -8,6 +8,8 @@ import (
 
 	app "github.com/matthewchivers/journal/pkg/application"
 	"github.com/matthewchivers/journal/pkg/config"
+	"github.com/matthewchivers/journal/pkg/logger"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,6 +29,7 @@ func TestCreateNewFile(t *testing.T) {
 	tests := []struct {
 		name             string
 		cfg              *config.Config
+		expectedFilePath string
 		expectedError    bool
 		expectedErrorMsg string
 	}{
@@ -35,7 +38,7 @@ func TestCreateNewFile(t *testing.T) {
 			cfg: &config.Config{
 				Paths: config.Paths{
 					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
+					JournalDirectory: "{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}",
 				},
 				Entries: []config.Entry{
 					{
@@ -45,14 +48,15 @@ func TestCreateNewFile(t *testing.T) {
 					},
 				},
 			},
-			expectedError: false,
+			expectedFilePath: filepath.Join(tempdir, time.Now().Format("2006/01/02")+"/foo.md"),
+			expectedError:    false,
 		},
 		{
 			name: "successful file creation - hardcoded extension", // support this as valid functionality in the future
 			cfg: &config.Config{
 				Paths: config.Paths{
 					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
+					JournalDirectory: "{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}",
 				},
 				Entries: []config.Entry{
 					{
@@ -61,14 +65,15 @@ func TestCreateNewFile(t *testing.T) {
 					},
 				},
 			},
-			expectedError: true,
+			expectedFilePath: filepath.Join(tempdir, time.Now().Format("2006/01/02")+"/foo.md"),
+			expectedError:    true,
 		},
 		{
 			name: "successful file creation - no extension",
 			cfg: &config.Config{
 				Paths: config.Paths{
 					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
+					JournalDirectory: "{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}",
 				},
 				Entries: []config.Entry{
 					{
@@ -77,14 +82,15 @@ func TestCreateNewFile(t *testing.T) {
 					},
 				},
 			},
-			expectedError: false,
+			expectedFilePath: filepath.Join(tempdir, time.Now().Format("2006/01/02")+"/foo"),
+			expectedError:    false,
 		},
 		{
 			name: "successful file creation - custom subdirectory",
 			cfg: &config.Config{
 				Paths: config.Paths{
 					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
+					JournalDirectory: "{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}",
 				},
 				Entries: []config.Entry{
 					{
@@ -95,7 +101,8 @@ func TestCreateNewFile(t *testing.T) {
 					},
 				},
 			},
-			expectedError: false,
+			expectedFilePath: filepath.Join(tempdir, time.Now().Format("2006/01/02")+"/foos/foo.md"),
+			expectedError:    false,
 		},
 	}
 
@@ -105,16 +112,19 @@ func TestCreateNewFile(t *testing.T) {
 	}()
 
 	for _, tt := range tests {
+		tempLogger := zerolog.New(os.Stdout).With().Timestamp().Logger()
+		logger.SetLogger(&tempLogger)
 		t.Run(tt.name, func(t *testing.T) {
 			entry := tt.cfg.Entries[0]
 
-			appCtx := &app.App{
-				Config: tt.cfg,
-			}
+			appCtx, err := app.NewApp()
+			assert.NoError(t, err)
+			tt.cfg.DefaultFileExt = "md"
+			appCtx.Config = tt.cfg
 
 			appCtx.SetLaunchTime(time.Now())
 
-			err := appCtx.PreparePatternData()
+			err = appCtx.PreparePatternData()
 			assert.NoError(t, err)
 
 			err = appCtx.SetEntryID(entry.ID)
@@ -131,12 +141,9 @@ func TestCreateNewFile(t *testing.T) {
 
 			appCtx.SetTopic("")
 
-			directory, err := appCtx.GetEntryDir()
+			path, err := appCtx.GetFilePath()
 			assert.NoError(t, err)
-			file, err := appCtx.GetEntryFileName()
-			assert.NoError(t, err)
-
-			path := filepath.Join(directory, file)
+			assert.Equal(t, tt.expectedFilePath, path)
 
 			// Main function under test
 			err = CreateNewFile(path)

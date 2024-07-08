@@ -38,7 +38,7 @@ func TestCreateNewFile(t *testing.T) {
 			cfg: &config.Config{
 				Paths: config.Paths{
 					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}",
+					JournalDirectory: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
 				},
 				Entries: []config.Entry{
 					{
@@ -56,7 +56,7 @@ func TestCreateNewFile(t *testing.T) {
 			cfg: &config.Config{
 				Paths: config.Paths{
 					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}",
+					JournalDirectory: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
 				},
 				Entries: []config.Entry{
 					{
@@ -73,7 +73,7 @@ func TestCreateNewFile(t *testing.T) {
 			cfg: &config.Config{
 				Paths: config.Paths{
 					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}",
+					JournalDirectory: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
 				},
 				Entries: []config.Entry{
 					{
@@ -90,7 +90,7 @@ func TestCreateNewFile(t *testing.T) {
 			cfg: &config.Config{
 				Paths: config.Paths{
 					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}",
+					JournalDirectory: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
 				},
 				Entries: []config.Entry{
 					{
@@ -130,13 +130,13 @@ func TestCreateNewFile(t *testing.T) {
 			err = appCtx.SetEntryID(entry.ID)
 			assert.NoError(t, err)
 
+			err = appCtx.SetFileExt("")
+			assert.NoError(t, err)
+
 			err = appCtx.SetFileName("")
 			assert.NoError(t, err)
 
 			err = appCtx.SetDirectory("")
-			assert.NoError(t, err)
-
-			err = appCtx.SetFileExt("")
 			assert.NoError(t, err)
 
 			appCtx.SetTopic("")

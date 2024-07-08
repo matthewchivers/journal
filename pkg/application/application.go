@@ -247,6 +247,7 @@ func (app *App) PreparePatternData() error {
 	if err != nil {
 		return fmt.Errorf("failed to prepare template data: %w", err)
 	}
+
 	app.TemplateData = &templateModel
 	return nil
 }

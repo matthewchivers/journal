@@ -32,8 +32,11 @@ var (
 // GetLogger returns the logger instance
 // If the logger instance is not set, it will be initialized with the default log level
 func GetLogger() (*zerolog.Logger, error) {
+	if logLevel == notSet {
+		logLevel = LogLevelDefault
+	}
 	if loggerInstance == nil {
-		err := InitLogger(LogLevelDefault)
+		err := InitLogger(logLevel)
 		if err != nil {
 			return nil, err
 		}

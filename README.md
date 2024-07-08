@@ -82,7 +82,7 @@ Here’s an explanation of the date tags available:
 * **Pad**: Zero-padded day of the month (e.g. 01, 02, 03...) `{{.Day.Pad}}`
 * **Ord**: Day of the month with ordinal suffix (e.g. 1st, 2nd, 3rd...) `{{.Day.Ord}}`
 * **Name**: Name of the day of the week (e.g. Monday, Tuesday...) `{{.Day.Name}}`
-* **Short**: Short name of the day of the week (e.g. Mon, Tue...). `{{.Day.Short}}`
+* **Short**: Short name of the day of the week (e.g. Mon, Tue...) `{{.Day.Short}}`
 
 The `Day` is relative to its parent container. For example:
 - `{{.Day}}`: Day of the month (1-31)
@@ -90,35 +90,40 @@ The `Day` is relative to its parent container. For example:
 - `{{.Week.Day}}`: Day of the week (1-7)
 
 **Month**:
-* **Num**: The month number (1-12)
-* **Pad**: Zero-padded month number (e.g. 01 for January)
-* **Ord**: Month with ordinal suffix (e.g. 1st)
-* **Name**: Full month name (e.g. January)
-* **Short**: Short month name (e.g. Jan)
-* **DaysIn**: Number of days in the month (e.g. 31 for January)
-* **Day**: Day of the month (1-31)
-* **Week**: Week of the month
+* **Num**: The month number (e.g. 1, 2, 3...) `{{.Month.Num}}`
+* **Pad**: Zero-padded month number (e.g. 01 for January) `{{.Month.Pad}}`
+* **Ord**: Month with ordinal suffix (e.g. 1st) `{{.Month.Ord}}`
+* **Name**: Full month name (e.g. January) `{{.Month.Name}}`
+* **Short**: Short month name (e.g. Jan) `{{.Month.Short}}`
+* **DaysIn**: Number of days in the month (e.g. 31 for January) `{{.Month.DaysIn}}`
+* **Day**: Day of the month (1-31) `{{.Month.Day}}`
+* **Week**: Week of the month `{{.Month.Week}}`
 
 **Week**:
-* **Num**: Week number
-* **Pad**: Zero-padded week number
-* **Ord**: Week with ordinal suffix
-* **Day**: Day of the week
+* **Num**: Week number `{{.Week.Num}}`
+* **Pad**: Zero-padded week number `{{.Week.Pad}}`
+* **Ord**: Week with ordinal suffix (e.g. 1st) `{{.Week.Ord}}`
+* **Day**: Day of the week `{{.Week.Day}}`
 
 The `Week` number is relative to its parent container:
-- `.Month.Week`: Week of the month (1-5)
-- `.Year.Week`: Week of the year (1-53)
+- `{{.Month.Week}}`: Week of the month (1-5)
+- `{{.Year.Week}}`: Week of the year (1-53)
 
 **Year**:
-* **Num**: Full year number (e.g. 2024)
-* **Short**: Short form of the year (e.g. 24)
-* **Month**: Details about the current month
-* **Week**: Details about the current week of the year
-* **Day**: Details about the current day of the year
-* **DaysIn**: Number of days in the year
+* **Num**: Full year number (e.g. 2024) `{{.Year.Num}}`
+* **Short**: Short form of the year (e.g. 24) `{{.Year.Short}}`
+* **Month**: Details about the current month `{{.Year.Month}}`
+* **Week**: Details about the current week of the year `{{.Year.Week}}`
+* **Day**: Details about the current day of the year `{{.Year.Day}}`
+* **DaysIn**: Number of days in the year `{{.Year.DaysIn}}`
 
 **WkCom**:
-Holds the same date structure as `Year`, `Month`, and `Day` but for the Monday of the current week. e.g. `.WkCom.Day.Num`.
+* Holds the same date structure as `Year`, `Month`, and `Day` but for the Monday of the current week. e.g.:
+  - `{{.WkCom.Year.Num}}`
+  - `{{.WkCom.Month.Num}}`
+  - `{{.WkCom.Day.Num}}`
+  - `{{.WkCom.Year.Day.Num}}`
+  - `{{.WkCom.Month.Week.Day.Num}}`
 
 ### Common Fields
 
@@ -133,23 +138,14 @@ Holds the same date structure as `Year`, `Month`, and `Day` but for the Monday o
 
 Assuming the current date is Friday, 2nd August 2024, with an entry called "note" and a topic called "ProjectA".
 
-**Pattern:** `{{.Year.Short}}-{{.Month.Pad}}-{{.Day.Pad}}/`
-**Parsed:** `24-08-02`
-
-**Pattern:** `{{.Year.Num}}/{{.Month.Short}}/{{.Day.Name}}-{{.Day.Ord}}-{{.Month.Name}}.md`
-**Parsed:** `2024/Aug/Friday-2nd-August.md`
-
-**Pattern:** `{{.WkCom.Year.Short}}/{{.WkCom.Month.Pad}}/{{.WkCom.Day.Pad}}`
-**Parsed:** `24/07/29` (Given that 29th July 2024 is the Monday of the current week)
-
-**Pattern:** `{{.EntryID}}_{{.Year.Num}}_{{.Month.Short}}_{{.Day.Pad}}.{{.FileExt}}`
-**Parsed:** `notes_2024_Aug_02.md`
-
-**Pattern:** `{{.Topic}}/{{.Year.Num}}/{{.Month.Name}}/{{.Day.Name}}`
-**Parsed:** `projectA/2024/August/Friday`
-
-**Pattern:** `{{.EntryID}}s/{{.Year.Day.Num}}-of-{{.Year.DaysIn}}`
-**Parsed:** `notes/215-of-366` (366 because 2024 is a leap year)
+| Pattern | Parsed |
+|---------|--------|
+| `{{.Year.Short}}-{{.Month.Pad}}-{{.Day.Pad}}/` | `24-08-02` |
+| `{{.Year.Num}}/{{.Month.Short}}/{{.Day.Name}}-{{.Day.Ord}}-{{.Month.Name}}.md` | `2024/Aug/Friday-2nd-August.md` |
+| `{{.WkCom.Year.Short}}/{{.WkCom.Month.Pad}}/{{.WkCom.Day.Pad}}` | `24/07/29` (Given that 29th July 2024 is the Monday of the current week) |
+| `{{.EntryID}}_{{.Year.Num}}_{{.Month.Short}}_{{.Day.Pad}}.{{.FileExt}}` | `notes_2024_Aug_02.md` |
+| `{{.Topic}}/{{.Year.Num}}/{{.Month.Name}}/{{.Day.Name}}` | `projectA/2024/August/Friday` |
+| `{{.EntryID}}s/{{.Year.Day.Num}}-of-{{.Year.DaysIn}}` | `notes/215-of-366` (366 because 2024 is a leap year) |
 
 This hierarchical and structured approach allows for flexible and dynamic generation of directory and file names based on the current date and entry details.
 

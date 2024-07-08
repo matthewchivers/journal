@@ -55,8 +55,110 @@ Based on the above configuration, here is an example of what `journal` would cre
   - **Directory**: `/home/user/journal/2024/06/standups/wc-17-06-24/`
   - **File**: `Fri-21st-Jun-24.md`
 
+## Templating
+
+Directories and filenames (with the exception of the base directory) can be templated. At its core, the templating contains:
+
+* **Year**: Information on the current year.
+* **Month**: Information on the current month.
+* **Day**: Information on the current day.
+* **WkCom**: Contains sub-year, month, and day details for the Monday of the current week.
+* **EntryID**: ID or name of the target entry.
+* **FileExt**: File extension for the target entry.
+* **Topic**: Topic specified for the entry.
+
+> At some point in the future, documents will be generated based on templates (at which point all the above will apply to the document templates too)
+
+### Date Hierarchy and Fields
+
+Dates have a hierarchical structure relative to their parent container. This allows dates to have different values based on context. For example, 2nd August 2024 is the 2nd day of August, the 5th day of the week (Friday), and the 215th day of the year (out of 366, as it is a leap year).
+
+This hierarchical structure allows these values to be referenced relative to their parent. In the example above, `Day` would be `2` (2nd August), `Week.Day` would be `5` (5th day of the week), `Month.Day` would be `2`, and `Year.Day` would be `215` (215th day of the year). These values are available in multiple formats, such as names (Monday/Tuesday/etc. or January/February/etc.), where applicable.
+
+Here’s an explanation of the date tags available:
+
+**Day**:
+* **Num**: The day of the month (e.g. 1, 2, 3...) `{{.Day.Num}}`
+* **Pad**: Zero-padded day of the month (e.g. 01, 02, 03...) `{{.Day.Pad}}`
+* **Ord**: Day of the month with ordinal suffix (e.g. 1st, 2nd, 3rd...) `{{.Day.Ord}}`
+* **Name**: Name of the day of the week (e.g. Monday, Tuesday...) `{{.Day.Name}}`
+* **Short**: Short name of the day of the week (e.g. Mon, Tue...). `{{.Day.Short}}`
+
+The `Day` is relative to its parent container. For example:
+- `{{.Day}}`: Day of the month (1-31)
+- `{{.Year.Day}}`: Day of the year (1-366)
+- `{{.Week.Day}}`: Day of the week (1-7)
+
+**Month**:
+* **Num**: The month number (1-12)
+* **Pad**: Zero-padded month number (e.g. 01 for January)
+* **Ord**: Month with ordinal suffix (e.g. 1st)
+* **Name**: Full month name (e.g. January)
+* **Short**: Short month name (e.g. Jan)
+* **DaysIn**: Number of days in the month (e.g. 31 for January)
+* **Day**: Day of the month (1-31)
+* **Week**: Week of the month
+
+**Week**:
+* **Num**: Week number
+* **Pad**: Zero-padded week number
+* **Ord**: Week with ordinal suffix
+* **Day**: Day of the week
+
+The `Week` number is relative to its parent container:
+- `.Month.Week`: Week of the month (1-5)
+- `.Year.Week`: Week of the year (1-53)
+
+**Year**:
+* **Num**: Full year number (e.g. 2024)
+* **Short**: Short form of the year (e.g. 24)
+* **Month**: Details about the current month
+* **Week**: Details about the current week of the year
+* **Day**: Details about the current day of the year
+* **DaysIn**: Number of days in the year
+
+**WkCom**:
+Holds the same date structure as `Year`, `Month`, and `Day` but for the Monday of the current week. e.g. `.WkCom.Day.Num`.
+
+### Common Fields
+
+- **Num**: Full number representation (1, 2, ... 20, 21... 101, 102...)
+- **Pad**: Zero-padded number representation (01, 02... 09, 10)
+- **Ord**: Number with ordinal suffix (1st, 2nd, 3rd... 10th, 11th... 101st, 102nd...)
+- **Name**: Full name (for months or weekdays) (Monday, Tuesday... or January, February...)
+- **Short**: Short name (for months or weekdays) (Mon, Tue... or Jan, Feb...)
+- **DaysIn**: Number of days (for months or years) (28/29/30/31 or 365/366)
+
+### Example Patterns
+
+Assuming the current date is Friday, 2nd August 2024, with an entry called "note" and a topic called "ProjectA".
+
+**Pattern:** `{{.Year.Short}}-{{.Month.Pad}}-{{.Day.Pad}}/`
+**Parsed:** `24-08-02`
+
+**Pattern:** `{{.Year.Num}}/{{.Month.Short}}/{{.Day.Name}}-{{.Day.Ord}}-{{.Month.Name}}.md`
+**Parsed:** `2024/Aug/Friday-2nd-August.md`
+
+**Pattern:** `{{.WkCom.Year.Short}}/{{.WkCom.Month.Pad}}/{{.WkCom.Day.Pad}}`
+**Parsed:** `24/07/29` (Given that 29th July 2024 is the Monday of the current week)
+
+**Pattern:** `{{.EntryID}}_{{.Year.Num}}_{{.Month.Short}}_{{.Day.Pad}}.{{.FileExt}}`
+**Parsed:** `notes_2024_Aug_02.md`
+
+**Pattern:** `{{.Topic}}/{{.Year.Num}}/{{.Month.Name}}/{{.Day.Name}}`
+**Parsed:** `projectA/2024/August/Friday`
+
+**Pattern:** `{{.EntryID}}s/{{.Year.Day.Num}}-of-{{.Year.DaysIn}}`
+**Parsed:** `notes/215-of-366` (366 because 2024 is a leap year)
+
+This hierarchical and structured approach allows for flexible and dynamic generation of directory and file names based on the current date and entry details.
+
 ## Logging
-`journal` uses `zerolog` for logging, with logs saved by default to the `.journal` directory in JSON format. Use the `--info` or `--debug` flags to output logs to the console in a readable format, or `--logjson` for JSON format in the console. Console will not output logs unless a log level flag is specified. Default level for file/saved logs is `info`.
+`journal` uses `zerolog` for logging. There are two levels that can be specified: `--info` and `--debug`.
+
+Logs are saved by default to the `~/.journal` directory in JSON format at `info` level. Logs are not automatically output to the console unless a log level is specified. For example, if a user specifies `--info` the console will now output `info` level logs, as well as still saving `info` level logs to the log file.
+
+When outputting to the console, the logger will opt for a human-readable format. Users may specify `--logjson` to have the console output in the regular json format instead.
 
 ## Contribution
 

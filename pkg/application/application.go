@@ -48,11 +48,11 @@ type App struct {
 // NewApp creates a new context instance
 func NewApp() (*App, error) {
 	app := &App{}
-	if logInst, err := logger.GetLogger(); err != nil {
+	logInst, err := logger.GetLogger()
+	if err != nil {
 		return nil, fmt.Errorf("error getting logger: %w", err)
-	} else {
-		log = logInst
 	}
+	log = logInst
 	return app, nil
 }
 

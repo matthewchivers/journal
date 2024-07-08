@@ -55,6 +55,9 @@ Based on the above configuration, here is an example of what `journal` would cre
   - **Directory**: `/home/user/journal/2024/06/standups/wc-17-06-24/`
   - **File**: `Fri-21st-Jun-24.md`
 
+## Logging
+`journal` uses `zerolog` for logging, with logs saved by default to the `.journal` directory in JSON format. Use the `--info` or `--debug` flags to output logs to the console in a readable format, or `--logjson` for JSON format in the console. Console will not output logs unless a log level flag is specified. Default level for file/saved logs is `info`.
+
 ## Contribution
 
 We welcome contributions! Please ensure that all pull requests and commit messages are informative. All code should build using the `make build` command and be appropriately unit tested. For any large changes, please open an issue first, for discussion.

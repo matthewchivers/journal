@@ -20,14 +20,10 @@ func (cfg *Config) LoadConfig(configPath string) error {
 		return err
 	}
 
+	log.Debug().Str("yaml_data", string(yamlData)).Msg("loaded yaml data")
+
 	if err := yaml.Unmarshal(yamlData, cfg); err != nil {
 		return err
-	}
-
-	for i := range cfg.Entries {
-		if cfg.Entries[i].FileExt == "" {
-			cfg.Entries[i].FileExt = cfg.DefaultFileExt
-		}
 	}
 
 	return nil

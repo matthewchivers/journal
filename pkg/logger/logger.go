@@ -90,7 +90,9 @@ func InitLogger(lvl LogLevel) error {
 	writers := []io.Writer{}
 
 	cw := getConsoleWriter()
-	writers = append(writers, cw)
+	if cw != nil {
+		writers = append(writers, cw)
+	}
 
 	fw, err := getFileWriter()
 	if err != nil {

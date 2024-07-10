@@ -279,7 +279,7 @@ func (app *App) SetFileExt(fileExt string) error {
 		if entry.FileExt != "" {
 			app.TemplateData.FileExt = entry.FileExt
 		} else {
-			app.TemplateData.FileExt = app.Config.DefaultFileExt
+			app.TemplateData.FileExt = app.Config.FileExt
 		}
 	}
 	return nil

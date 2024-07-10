@@ -81,10 +81,13 @@ func createPreRun(_ *cobra.Command, _ []string) {
 	log.Debug().Dict("parameters",
 		zerolog.Dict().
 			Str("entry_id", params.entryID).
-			Str("directory", params.directoryPath).
-			Str("extension", params.fileExtension).
-			Str("filename", params.fileName).
-			Str("topic", params.topic),
+			Str("directory_path", params.directoryPath).
+			Str("file_extension", params.fileExtension).
+			Str("file_name", params.fileName).
+			Str("topic", params.topic).
+			Str("editor", params.editor),
+	).Dict("flags",
+		zerolog.Dict().Bool("no_open", flags.noOpen),
 	).
 		Str("command", "create").
 		Msg("creating new journal entry with the 'create' command")

@@ -70,7 +70,6 @@ userSettings:
 				Paths: Paths{
 					TemplatesDirectory: "~/.journal/customtemplates",
 					BaseDirectory:      "~/journals",
-					JournalDirectory:   "{{.Year}}/{{.Month}}/{{.Day}}/",
 				},
 				UserSettings: UserSettings{
 					Timezone: "Europe/London",

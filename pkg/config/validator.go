@@ -20,10 +20,6 @@ func validatePaths(paths Paths) error {
 	if paths.BaseDirectory == "" {
 		return errors.New("base directory not set")
 	}
-	if paths.JournalDirectory == "" {
-		return errors.New("directory pattern not set")
-	}
-
 	return nil
 }
 
@@ -37,7 +33,7 @@ func validateEntries(entries []Entry, fileExt string) error {
 			return errors.New("file type name not set")
 		}
 		if entry.FileExt == "" && fileExt == "" {
-			return errors.New("file extension not set (FileExt must be set if fileExt is not set for an individual file entry)")
+			return errors.New("file extension not set")
 		}
 	}
 

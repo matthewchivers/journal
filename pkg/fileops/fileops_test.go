@@ -37,48 +37,48 @@ func TestCreateNewFile(t *testing.T) {
 			name: "successful file creation",
 			cfg: &config.Config{
 				Paths: config.Paths{
-					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
+					BaseDirectory: tempdir,
 				},
 				Entries: []config.Entry{
 					{
-						ID:       "foo",
-						FileExt:  "md",
-						FileName: "{{.EntryID}}.{{.FileExt}}",
+						ID:               "foo",
+						FileExt:          "md",
+						DirectoryPattern: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
+						FileNamePattern:  "{{.EntryID}}.{{.FileExt}}",
 					},
 				},
 			},
-			expectedFilePath: filepath.Join(tempdir, time.Now().Format("2006/01/02")+"/foo.md"),
+			expectedFilePath: filepath.Join(tempdir, time.Now().Format("2006/01/02"), "foo.md"),
 			expectedError:    false,
 		},
 		{
-			name: "successful file creation - hardcoded extension", // support this as valid functionality in the future
+			name: "successful file creation - hardcoded extension",
 			cfg: &config.Config{
 				Paths: config.Paths{
-					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
+					BaseDirectory: tempdir,
 				},
 				Entries: []config.Entry{
 					{
-						ID:       "foo",
-						FileName: "{{.EntryID}}.md",
+						ID:               "foo",
+						DirectoryPattern: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
+						FileNamePattern:  "{{.EntryID}}.md",
 					},
 				},
 			},
-			expectedFilePath: filepath.Join(tempdir, time.Now().Format("2006/01/02")+"/foo.md"),
+			expectedFilePath: filepath.Join(tempdir, time.Now().Format("2006/01/02"), "foo.md"),
 			expectedError:    true,
 		},
 		{
 			name: "successful file creation - no extension",
 			cfg: &config.Config{
 				Paths: config.Paths{
-					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
+					BaseDirectory: tempdir,
 				},
 				Entries: []config.Entry{
 					{
-						ID:       "foo",
-						FileName: "{{.EntryID}}",
+						ID:               "foo",
+						DirectoryPattern: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
+						FileNamePattern:  "{{.EntryID}}",
 					},
 				},
 			},
@@ -89,15 +89,14 @@ func TestCreateNewFile(t *testing.T) {
 			name: "successful file creation - custom subdirectory",
 			cfg: &config.Config{
 				Paths: config.Paths{
-					BaseDirectory:    tempdir,
-					JournalDirectory: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
+					BaseDirectory: tempdir,
 				},
 				Entries: []config.Entry{
 					{
-						ID:        "foo",
-						FileName:  "{{.EntryID}}.{{.FileExt}}",
-						Directory: "{{.EntryID}}s",
-						FileExt:   "md",
+						ID:               "foo",
+						FileNamePattern:  "{{.EntryID}}.{{.FileExt}}",
+						DirectoryPattern: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}/{{.EntryID}}s",
+						FileExt:          "md",
 					},
 				},
 			},

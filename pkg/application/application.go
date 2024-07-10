@@ -171,31 +171,23 @@ func (app *App) CalculateEntryDir() (string, error) {
 		return "", err
 	}
 
-	journalDirPattern := app.Config.Paths.JournalDirectory
-	if entry.JournalDirOverride != "" {
-		journalDirPattern = entry.JournalDirOverride
+	baseDirectory := app.Config.Paths.BaseDirectory
+	if entry.BaseDirectory != "" {
+		baseDirectory = entry.BaseDirectory
 	}
 
-	journalDirectory, err := app.TemplateData.ParsePattern(journalDirPattern)
-	if err != nil {
-		return "", fmt.Errorf("failed to construct journal path: %w", err)
-	}
-
-	entryDirectory, err := app.TemplateData.ParsePattern(entry.Directory)
+	entryDirectory, err := app.TemplateData.ParsePattern(entry.DirectoryPattern)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct nested path: %w", err)
 	}
 
-	fullDirectory := filepath.Join(app.Config.Paths.BaseDirectory, journalDirectory, entryDirectory)
+	fullDirectory := filepath.Join(baseDirectory, entryDirectory)
 
 	log.Debug().Str("base_dir", app.Config.Paths.BaseDirectory).
-		Str("journal_dir_pattern", app.Config.Paths.JournalDirectory).
-		Str("journal_dir_pattern_override", entry.JournalDirOverride).
-		Str("journal_dir_pattern_final", journalDirPattern).
-		Str("journal_dir_pattern_parsed", journalDirectory).
-		Str("entry_dir_pattern", entry.Directory).
+		Str("entry_dir_pattern", entry.DirectoryPattern).
 		Str("entry_dir_pattern_parsed", entryDirectory).
-		Str("full_directory path", fullDirectory).Msg("entry directory calculation (basedir/journaldir/entrydir)")
+		Str("full_directory path", fullDirectory).
+		Msg("entry directory calculation (basedir/journaldir/entrydir)")
 
 	return fullDirectory, nil
 }
@@ -215,13 +207,13 @@ func (app *App) GetEntryFileName() (string, error) {
 		return "", errors.New("pattern data must be initialised before getting entry file name")
 	}
 
-	fileName, err := app.TemplateData.ParsePattern(entry.FileName)
+	fileName, err := app.TemplateData.ParsePattern(entry.FileNamePattern)
 	if err != nil {
 		return "", fmt.Errorf("failed to construct file name: %w", err)
 	}
 
 	log.Debug().Str("entry_id", app.EntryID).
-		Str("file_name_pattern", entry.FileName).
+		Str("file_name_pattern", entry.FileNamePattern).
 		Str("file_name_parsed", fileName).
 		Msg("entry filename calculation")
 	return fileName, nil

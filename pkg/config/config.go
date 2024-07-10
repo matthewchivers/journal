@@ -2,13 +2,6 @@ package config
 
 import (
 	"fmt"
-
-	"github.com/matthewchivers/journal/pkg/logger"
-	"github.com/rs/zerolog"
-)
-
-var (
-	log *zerolog.Logger
 )
 
 // Config contains the configuration for the application (user settings, paths, entry types, etc.)
@@ -36,11 +29,6 @@ type Config struct {
 
 // NewConfig creates and returns a new Config object
 func NewConfig() (*Config, error) {
-	newLogger, err := logger.GetLogger()
-	if err != nil {
-		return nil, err
-	}
-	log = newLogger
 	return &Config{}, nil
 }
 

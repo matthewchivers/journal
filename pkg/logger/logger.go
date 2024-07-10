@@ -24,49 +24,14 @@ const (
 )
 
 var (
-	loggerInstance *zerolog.Logger
-	loggingPath    string
-	logLevel       LogLevel
-	logJSON        bool
+	loggingPath string
+	logJSON     bool
+	Log         *zerolog.Logger
 )
-
-// GetLogger returns the logger instance
-// If the logger instance is not set, it will be initialized with the default log level
-func GetLogger() (*zerolog.Logger, error) {
-	if logLevel == notSet {
-		logLevel = LogLevelDefault
-	}
-	if loggerInstance == nil {
-		err := InitLogger(logLevel)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return loggerInstance, nil
-}
 
 // SetLogger sets the logger instance
 func SetLogger(l *zerolog.Logger) {
-	loggerInstance = l
-}
-
-// SetLoggingPath
-func SetLoggingPath(logPath string) error {
-	if logPath != "" {
-		loggingPath = logPath
-	} else {
-		appHome, err := paths.GetAppHomePath()
-		if err != nil {
-			return err
-		}
-		loggingPath = filepath.Join(appHome, "journal.log")
-	}
-	return nil
-}
-
-// SetLogLevel sets the log level
-func SetLogLevel(level LogLevel) {
-	logLevel = level
+	Log = l
 }
 
 // SetLogJSON sets the JSON flag
@@ -75,10 +40,8 @@ func SetLogJSON(json bool) {
 }
 
 // InitLogger initializes the logger
-func InitLogger(lvl LogLevel) error {
-	logLevel = lvl
-
-	switch logLevel {
+func InitLogger(level LogLevel) error {
+	switch level {
 	case LogLevelDefault:
 		zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	case LogLevelInfo:
@@ -89,9 +52,11 @@ func InitLogger(lvl LogLevel) error {
 
 	writers := []io.Writer{}
 
-	cw := getConsoleWriter()
-	if cw != nil {
-		writers = append(writers, cw)
+	if level >= LogLevelInfo {
+		cw := getConsoleWriter()
+		if cw != nil {
+			writers = append(writers, cw)
+		}
 	}
 
 	fw, err := getFileWriter()
@@ -102,9 +67,9 @@ func InitLogger(lvl LogLevel) error {
 
 	multiWriter := zerolog.MultiLevelWriter(writers...)
 	multiLogger := zerolog.New(multiWriter).With().Timestamp().Logger()
-	loggerInstance = &multiLogger
+	Log = &multiLogger
 
-	loggerInstance.Debug().Str("log_level", loggerInstance.GetLevel().String()).
+	Log.Debug().Str("log_level", Log.GetLevel().String()).
 		Str("log_path", loggingPath).
 		Msg("created logger")
 	return nil
@@ -113,28 +78,26 @@ func InitLogger(lvl LogLevel) error {
 // getConsoleWriter returns the console writer
 func getConsoleWriter() io.Writer {
 	var iow io.Writer
-	if logLevel >= LogLevelInfo {
-		if logJSON {
-			iow = os.Stdout
-		} else {
-			// Human readable console logger
-			consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
-			consoleWriter.FormatMessage = func(i interface{}) string {
-				return fmt.Sprintf("*** %s ****", i)
-			}
-			iow = consoleWriter
+	if logJSON {
+		iow = os.Stdout
+	} else {
+		// Human readable console logger
+		consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+		consoleWriter.FormatMessage = func(i interface{}) string {
+			return fmt.Sprintf("*** %s ****", i)
 		}
+		iow = consoleWriter
 	}
 	return iow
 }
 
 func getFileWriter() (io.Writer, error) {
 	// Structured logging to file
-	if loggingPath == "" {
-		if err := SetLoggingPath(""); err != nil {
-			return nil, fmt.Errorf("error setting logging path: %q", err)
-		}
+	appHome, err := paths.GetAppHomePath()
+	if err != nil {
+		return nil, err
 	}
+	loggingPath = filepath.Join(appHome, "journal.log")
 
 	file, err := os.OpenFile(loggingPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {

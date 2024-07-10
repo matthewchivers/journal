@@ -87,27 +87,21 @@ func loadConfig() error {
 
 // setupLogging sets the log level for the application based on the flags provided
 func setupLogging() error {
+	logger.SetLogJSON(logJSON)
+	var logLevel logger.LogLevel
 	switch {
 	case logLevelInfo:
-		logger.SetLogLevel(logger.LogLevelInfo)
+		logLevel = logger.LogLevelInfo
 	case logLevelDebug:
-		logger.SetLogLevel(logger.LogLevelDebug)
+		logLevel = logger.LogLevelDebug
 	default:
-		logger.SetLogLevel(logger.LogLevelDefault)
+		logLevel = logger.LogLevelDefault
 	}
 
-	logger.SetLogJSON(logJSON)
-
-	err := logger.SetLoggingPath(loggingPath)
+	err := logger.InitLogger(logLevel)
 	if err != nil {
-		fmt.Println("error setting logging path:", err)
-		os.Exit(1)
-	}
-
-	log, err = logger.GetLogger()
-	if err != nil {
-		fmt.Println("error getting logger: ", err)
 		return err
 	}
+
 	return nil
 }

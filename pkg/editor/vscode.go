@@ -8,33 +8,25 @@ import (
 	"regexp"
 
 	"github.com/matthewchivers/journal/pkg/logger"
-	"github.com/rs/zerolog"
 )
-
-var log *zerolog.Logger
 
 type VSCode struct{}
 
 // NewVSCodeEditor creates a new Visual Studio Code editor
 func NewVSCodeEditor() (*VSCode, error) {
-	lgr, err := logger.GetLogger()
-	if err != nil {
-		return nil, err
-	}
-	log = lgr
 	return &VSCode{}, nil
 }
 
 // OpenFile opens a file in Visual Studio Code
 func (v *VSCode) OpenFile(filePath string) error {
-	log.Info().Str("file_path", filePath).
+	logger.Log.Info().Str("file_path", filePath).
 		Str("editor", "Visual Studio Code").
 		Msg("opening file in Visual Studio Code")
 
 	// *** Security - Path Traversal ***
 	// Validate path to ensure it is safe and does not contain any malicious content
 	if err := validatePath(filePath); err != nil {
-		log.Err(err).Str("file_path", filePath).
+		logger.Log.Err(err).Str("file_path", filePath).
 			Msg("error validating file path")
 		return err
 	}
@@ -43,12 +35,12 @@ func (v *VSCode) OpenFile(filePath string) error {
 	// The inputs have been validated
 	cmd := exec.Command("code", filePath)
 	if err := cmd.Run(); err != nil {
-		log.Err(err).Str("file_path", filePath).
+		logger.Log.Err(err).Str("file_path", filePath).
 			Str("editor", "Visual Studio Code").
 			Msg("error opening file in Visual Studio Code")
 		return err
 	}
-	log.Info().Str("file_path", filePath).
+	logger.Log.Info().Str("file_path", filePath).
 		Str("editor", "Visual Studio Code").
 		Msg("opened file in Visual Studio Code")
 	return nil

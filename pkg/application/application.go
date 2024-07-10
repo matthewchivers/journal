@@ -12,10 +12,7 @@ import (
 	"github.com/matthewchivers/journal/pkg/logger"
 	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/matthewchivers/journal/pkg/templating"
-	"github.com/rs/zerolog"
 )
-
-var log *zerolog.Logger
 
 type App struct {
 	// LaunchTime is the time the application was launched
@@ -58,18 +55,13 @@ type App struct {
 // NewApp creates a new context instance
 func NewApp() (*App, error) {
 	app := &App{}
-	logInst, err := logger.GetLogger()
-	if err != nil {
-		return nil, fmt.Errorf("error getting logger: %w", err)
-	}
-	log = logInst
 	return app, nil
 }
 
 // SetLaunchTime sets the launch time of the application
 func (app *App) SetLaunchTime(launchTime time.Time) {
 	app.LaunchTime = launchTime
-	log.Debug().Str("launch_time", launchTime.String()).Msg("launch time set")
+	logger.Log.Debug().Str("launch_time", launchTime.String()).Msg("launch time set")
 }
 
 // SetConfigPath sets the path to the configuration file
@@ -101,7 +93,7 @@ func (app *App) SetupConfig() error {
 		return err
 	}
 	app.Config = cfg
-	log.Debug().Msg("config loaded and validated")
+	logger.Log.Debug().Msg("config loaded and validated")
 	return nil
 }
 
@@ -178,7 +170,7 @@ func (app *App) SetFileName(fileName string) error {
 		}
 		app.FileName = fileName
 	}
-	log.Debug().Str("file_name_override", fileName).
+	logger.Log.Debug().Str("file_name_override", fileName).
 		Str("file_name_final", app.FileName).
 		Msg("file name set")
 	return nil
@@ -194,13 +186,13 @@ func (app *App) CalculateEntryDir() (string, error) {
 
 	if app.TemplateData == nil {
 		err := errors.New("template data must be initialised before getting entry directory")
-		log.Err(err).Msg("")
+		logger.Log.Err(err).Msg("")
 		return "", err
 	}
 
 	if app.BaseDirectory == "" {
 		err := errors.New("base directory must be set before getting entry directory")
-		log.Err(err).Msg("")
+		logger.Log.Err(err).Msg("")
 		return "", err
 	}
 
@@ -211,7 +203,7 @@ func (app *App) CalculateEntryDir() (string, error) {
 
 	fullDirectory := filepath.Join(app.BaseDirectory, entryDirectory)
 
-	log.Debug().Str("base_dir", app.Config.Paths.BaseDirectory).
+	logger.Log.Debug().Str("base_dir", app.Config.Paths.BaseDirectory).
 		Str("entry_dir_pattern", entry.DirectoryPattern).
 		Str("entry_dir_pattern_parsed", entryDirectory).
 		Str("full_directory path", fullDirectory).
@@ -278,7 +270,7 @@ func (app *App) GetEntryFileName() (string, error) {
 		return "", fmt.Errorf("failed to construct file name: %w", err)
 	}
 
-	log.Debug().Str("entry_id", app.EntryID).
+	logger.Log.Debug().Str("entry_id", app.EntryID).
 		Str("file_name_pattern", entry.FileNamePattern).
 		Str("file_name_parsed", fileName).
 		Msg("entry filename calculation")
@@ -298,7 +290,7 @@ func (app *App) GetFilePath() (string, error) {
 		return "", errors.New("file name must be set before getting file path")
 	}
 	app.FilePath = filepath.Join(app.EntryDirectory, app.FileName)
-	log.Debug().Str("directory", app.EntryDirectory).
+	logger.Log.Debug().Str("directory", app.EntryDirectory).
 		Str("file_name", app.FileName).
 		Str("file_path", app.FilePath).
 		Msg("file path calculated from directory and file name")

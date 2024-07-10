@@ -15,26 +15,7 @@ func TestValidate(t *testing.T) {
 			name: "base directory not set",
 			args: args{
 				cfg: Config{
-					Paths: Paths{
-						JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
-					},
-					Entries: []Entry{
-						{
-							ID:      "foo",
-							FileExt: "md",
-						},
-					},
-				},
-			},
-			wantErr: true,
-		},
-		{
-			name: "directory pattern not set",
-			args: args{
-				cfg: Config{
-					Paths: Paths{
-						BaseDirectory: "/tmp",
-					},
+					Paths: Paths{},
 					Entries: []Entry{
 						{
 							ID:      "foo",
@@ -50,8 +31,7 @@ func TestValidate(t *testing.T) {
 			args: args{
 				cfg: Config{
 					Paths: Paths{
-						BaseDirectory:    "/tmp",
-						JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
+						BaseDirectory: "/tmp",
 					},
 				},
 			},
@@ -62,8 +42,7 @@ func TestValidate(t *testing.T) {
 			args: args{
 				cfg: Config{
 					Paths: Paths{
-						BaseDirectory:    "/tmp",
-						JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
+						BaseDirectory: "/tmp",
 					},
 					Entries: []Entry{
 						{
@@ -79,8 +58,7 @@ func TestValidate(t *testing.T) {
 			args: args{
 				cfg: Config{
 					Paths: Paths{
-						BaseDirectory:    "/tmp",
-						JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
+						BaseDirectory: "/tmp",
 					},
 					Entries: []Entry{
 						{
@@ -96,8 +74,7 @@ func TestValidate(t *testing.T) {
 			args: args{
 				cfg: Config{
 					Paths: Paths{
-						BaseDirectory:    "/tmp",
-						JournalDirectory: "{{.Year}}/{{.Month}}/{{.Day}}",
+						BaseDirectory: "/tmp",
 					},
 					Entries: []Entry{
 						{

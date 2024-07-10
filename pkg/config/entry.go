@@ -11,17 +11,14 @@ type Entry struct {
 	// Schedule contains the schedule for the file type
 	Schedule Schedule `yaml:"schedule,omitempty"`
 
-	// JournalDirectory is the pattern to use when creating a subdirectory
-	Directory string `yaml:"directory,omitempty"`
+	// DirectoryPattern is the pattern to use when creating a subdirectory
+	DirectoryPattern string `yaml:"directoryPattern,omitempty"`
 
-	// FileName is the pattern to use when creating a file name
-	FileName string `yaml:"fileName"`
+	// FileNamePattern is the pattern to use when creating a file name
+	FileNamePattern string `yaml:"fileNamePattern"`
 
-	// JournalDirOverride is an override pattern for the main directory
-	JournalDirOverride string `yaml:"journalDirOverride,omitempty"`
-
-	// CustomBaseDirectory
-	BaseDirectoryOverride string `yaml:"baseDirectoryOverride,omitempty"`
+	// BaseDirectory
+	BaseDirectory string `yaml:"baseDirectory,omitempty"`
 
 	// TemplateName is the name of the template to use when creating a new entry
 	// (if not specified, the default template will be used)

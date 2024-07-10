@@ -12,13 +12,13 @@ import (
 )
 
 var (
-	cfgPath          string
-	loggingPathParam string
-	logLevelInfo     bool
-	logLevelDebug    bool
-	logJSON          bool
-	app              *application.App
-	log              *zerolog.Logger
+	cfgPath       string
+	loggingPath   string
+	logLevelInfo  bool
+	logLevelDebug bool
+	logJSON       bool
+	app           *application.App
+	log           *zerolog.Logger
 )
 
 var rootCmd = &cobra.Command{
@@ -31,19 +31,21 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		log.Debug().Dict("flags", zerolog.Dict().
+			Bool("json", logJSON).
+			Bool("info", logLevelInfo).
+			Bool("debug", logLevelDebug)).
+			Dict("parameters", zerolog.Dict().
+				Str("config_path", cfgPath).
+				Str("log_path", loggingPath)).
+			Msg("starting journal cli")
+
 		app, err = application.NewApp()
 		if err != nil {
 			log.Err(err).Msg("error creating application context store")
 			os.Exit(1)
 		}
 
-		log.Info().Msg("starting journal cli")
-		log.Debug().Str("config_path", cfgPath).
-			Str("log_path", loggingPathParam).
-			Bool("info", logLevelInfo).
-			Bool("debug", logLevelDebug).
-			Bool("json", logJSON).
-			Msg("config path set")
 		app.SetLaunchTime(time.Now())
 		if err := loadConfig(); err != nil {
 			log.Err(err).Msg("error loading config")
@@ -66,7 +68,7 @@ func Execute() error {
 
 func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgPath, "config", "", "path to config file")
-	rootCmd.PersistentFlags().StringVar(&loggingPathParam, "logpath", "", "path to log file")
+	rootCmd.PersistentFlags().StringVar(&loggingPath, "logpath", "", "path to log file")
 	rootCmd.PersistentFlags().BoolVar(&logLevelInfo, "info", false, "set log level to info")
 	rootCmd.PersistentFlags().BoolVar(&logLevelDebug, "debug", false, "set log level to debug")
 	rootCmd.PersistentFlags().BoolVar(&logJSON, "logjson", false, "set log output to JSON format")
@@ -96,7 +98,7 @@ func setupLogging() error {
 
 	logger.SetLogJSON(logJSON)
 
-	err := logger.SetLoggingPath(loggingPathParam)
+	err := logger.SetLoggingPath(loggingPath)
 	if err != nil {
 		fmt.Println("error setting logging path:", err)
 		os.Exit(1)

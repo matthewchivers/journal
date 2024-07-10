@@ -119,7 +119,7 @@ func TestCreateNewFile(t *testing.T) {
 
 			appCtx, err := app.NewApp()
 			assert.NoError(t, err)
-			tt.cfg.DefaultFileExt = "md"
+			tt.cfg.FileExt = "md"
 			appCtx.Config = tt.cfg
 
 			appCtx.SetLaunchTime(time.Now())

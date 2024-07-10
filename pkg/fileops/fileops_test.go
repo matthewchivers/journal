@@ -42,9 +42,9 @@ func TestCreateNewFile(t *testing.T) {
 				Entries: []config.Entry{
 					{
 						ID:               "foo",
-						FileExt:          "md",
+						FileExtension:    "md",
 						DirectoryPattern: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}",
-						FileNamePattern:  "{{.EntryID}}.{{.FileExt}}",
+						FileNamePattern:  "{{.EntryID}}.{{.FileExtension}}",
 					},
 				},
 			},
@@ -66,7 +66,7 @@ func TestCreateNewFile(t *testing.T) {
 				},
 			},
 			expectedFilePath: filepath.Join(tempdir, time.Now().Format("2006/01/02"), "foo.md"),
-			expectedError:    true,
+			expectedError:    false,
 		},
 		{
 			name: "successful file creation - no extension",
@@ -94,9 +94,9 @@ func TestCreateNewFile(t *testing.T) {
 				Entries: []config.Entry{
 					{
 						ID:               "foo",
-						FileNamePattern:  "{{.EntryID}}.{{.FileExt}}",
+						FileNamePattern:  "{{.EntryID}}.{{.FileExtension}}",
 						DirectoryPattern: "{{.Year.Num}}/{{.Month.Pad}}/{{.Day.Pad}}/{{.EntryID}}s",
-						FileExt:          "md",
+						FileExtension:    "md",
 					},
 				},
 			},
@@ -118,7 +118,7 @@ func TestCreateNewFile(t *testing.T) {
 
 			appCtx, err := app.NewApp()
 			assert.NoError(t, err)
-			tt.cfg.FileExt = "md"
+			tt.cfg.FileExtension = "md"
 			appCtx.Config = tt.cfg
 
 			appCtx.SetLaunchTime(time.Now())
@@ -129,13 +129,16 @@ func TestCreateNewFile(t *testing.T) {
 			err = appCtx.SetEntryID(entry.ID)
 			assert.NoError(t, err)
 
-			err = appCtx.SetFileExt("")
+			err = appCtx.SetFileExtension("")
 			assert.NoError(t, err)
 
 			err = appCtx.SetFileName("")
 			assert.NoError(t, err)
 
-			err = appCtx.SetDirectory("")
+			err = appCtx.SetBaseDirectory("")
+			assert.NoError(t, err)
+
+			err = appCtx.SetEntryDirectory("")
 			assert.NoError(t, err)
 
 			appCtx.SetTopic("")

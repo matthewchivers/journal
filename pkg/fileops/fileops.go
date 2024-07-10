@@ -5,11 +5,23 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/rs/zerolog/log"
+	"github.com/matthewchivers/journal/pkg/logger"
+	"github.com/rs/zerolog"
+)
+
+var (
+	log *zerolog.Logger
 )
 
 // CreateNewFile creates a new file based on the provided configuration and document template name
 func CreateNewFile(filePath string) error {
+	if log == nil {
+		lgr, err := logger.GetLogger()
+		if err != nil {
+			return err
+		}
+		log = lgr
+	}
 	if err := ensureDirectoryExists(filepath.Dir(filePath)); err != nil {
 		return err
 	}
@@ -19,7 +31,9 @@ func CreateNewFile(filePath string) error {
 		if info, err := os.Stat(filePath); err == nil && info.IsDir() {
 			return fmt.Errorf("file already exists and is a directory: %s", filePath)
 		}
-		return fmt.Errorf("file already exists: %s", filePath)
+		// return fmt.Errorf("file already exists: %s", filePath)
+		log.Warn().Str("file_path", filePath).Msg("file already exists")
+		return nil
 	}
 	file, err := os.Create(filePath)
 	if err != nil {

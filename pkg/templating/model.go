@@ -117,8 +117,8 @@ type TemplateModel struct {
 	// EntryID is the name of the entry type (e.g. notes/entry/diary/todo/meeting)
 	EntryID string
 
-	// FileExt is the file extension of the file type (e.g. "md")
-	FileExt string
+	// FileExtension is the file extension of the file type (e.g. "md")
+	FileExtension string
 
 	// Topic is the name of the topic for the entry (e.g. "project A/B/C")
 	Topic string

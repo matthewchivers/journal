@@ -9,7 +9,7 @@ func (cfg *Config) Validate() error {
 	if err := validatePaths(cfg.Paths); err != nil {
 		return err
 	}
-	if err := validateEntries(cfg.Entries, cfg.FileExt); err != nil {
+	if err := validateEntries(cfg.Entries, cfg.FileExtension); err != nil {
 		return err
 	}
 	return nil
@@ -32,7 +32,7 @@ func validateEntries(entries []Entry, fileExt string) error {
 		if entry.ID == "" {
 			return errors.New("file type name not set")
 		}
-		if entry.FileExt == "" && fileExt == "" {
+		if entry.FileExtension == "" && fileExt == "" {
 			return errors.New("file extension not set")
 		}
 	}

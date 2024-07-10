@@ -1,7 +1,5 @@
 package editor
 
-// VSCode is an editor implementation for Visual Studio Code
-
 import (
 	"errors"
 	"os"
@@ -15,46 +13,26 @@ import (
 
 var log *zerolog.Logger
 
-type VSCode struct {
-	parentDirectory string
-}
+type VSCode struct{}
 
 // NewVSCodeEditor creates a new Visual Studio Code editor
-func NewVSCodeEditor() *VSCode {
+func NewVSCodeEditor() (*VSCode, error) {
 	lgr, err := logger.GetLogger()
 	if err != nil {
-		log = lgr
+		return nil, err
 	}
-	return &VSCode{}
-}
-
-// SetParentDirectory sets the parent directory for the editor
-func (v *VSCode) SetParentDirectory(parentDirectory string) {
-	v.parentDirectory = parentDirectory
+	log = lgr
+	return &VSCode{}, nil
 }
 
 // OpenFile opens a file in Visual Studio Code
 func (v *VSCode) OpenFile(filePath string) error {
 	log.Info().Str("file_path", filePath).
 		Str("editor", "Visual Studio Code").
-		Str("parent_directory", v.parentDirectory).
 		Msg("opening file in Visual Studio Code")
-	if v.parentDirectory == "" {
-		return errors.New("parent directory not set")
-	}
 
 	// *** Security - Path Traversal ***
-	// Validate all paths to ensure they are safe and do not contain any malicious content
-	if err := validatePath(v.parentDirectory); err != nil {
-		log.Err(err).Str("parent_directory", v.parentDirectory).
-			Msg("error validating parent directory")
-		return err
-	}
-	if err := isDirectory(v.parentDirectory); err != nil {
-		log.Err(err).Str("parent_directory", v.parentDirectory).
-			Msg("error validating parent directory")
-		return err
-	}
+	// Validate path to ensure it is safe and does not contain any malicious content
 	if err := validatePath(filePath); err != nil {
 		log.Err(err).Str("file_path", filePath).
 			Msg("error validating file path")
@@ -63,27 +41,16 @@ func (v *VSCode) OpenFile(filePath string) error {
 
 	// #nosec G204: Subprocess launched with a potential tainted input or cmd arguments
 	// The inputs have been validated
-	cmd := exec.Command("code", v.parentDirectory, "--goto", filePath)
+	cmd := exec.Command("code", filePath)
 	if err := cmd.Run(); err != nil {
 		log.Err(err).Str("file_path", filePath).
 			Str("editor", "Visual Studio Code").
-			Str("parent_directory", v.parentDirectory).
 			Msg("error opening file in Visual Studio Code")
 		return err
 	}
-	log.Debug().Str("file_path", filePath).
+	log.Info().Str("file_path", filePath).
 		Str("editor", "Visual Studio Code").
-		Str("parent_directory", v.parentDirectory).
-		Msg("file opened in Visual Studio Code")
-	return nil
-}
-
-// isDirectory validates the parent directory
-func isDirectory(dir string) error {
-	// check if the directory is a directory
-	if fileInfo, err := os.Stat(dir); err != nil || !fileInfo.IsDir() {
-		return errors.New("parent directory is not a directory")
-	}
+		Msg("opened file in Visual Studio Code")
 	return nil
 }
 

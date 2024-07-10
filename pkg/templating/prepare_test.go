@@ -50,7 +50,7 @@ func TestParsePattern(t *testing.T) {
 				fileExt: "md",
 				topic:   "bar",
 			},
-			pattern:  "/journal/{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}/{{.EntryID}}/{{.Topic}}.{{.FileExt}}",
+			pattern:  "/journal/{{.Year.Num}}/{{.Month.Num}}/{{.Day.Num}}/{{.EntryID}}/{{.Topic}}.{{.FileExtension}}",
 			expected: "/journal/2024/6/28/foo/bar.md",
 		},
 		{
@@ -69,7 +69,7 @@ func TestParsePattern(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			templateData, _ := PrepareTemplateData(testTime)
 			templateData.EntryID = tt.args.entryID
-			templateData.FileExt = tt.args.fileExt
+			templateData.FileExtension = tt.args.fileExt
 			templateData.Topic = tt.args.topic
 			parsedPath, err := templateData.ParsePattern(tt.pattern)
 			assert.NoError(t, err, "Error should be nil")

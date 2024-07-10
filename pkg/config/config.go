@@ -18,8 +18,11 @@ type Config struct {
 	// DefaultEntry: specify the entry id of the desired default entry
 	DefaultEntry string `yaml:"defaultEntry"`
 
-	// FileExt is the file extension to use when creating a new entry (can be overridden per entry)
-	FileExt string `yaml:"fileExt,omitempty"`
+	// Editor is the editor to use when opening files
+	Editor string `yaml:"editor,omitempty"`
+
+	// FileExtension is the file extension to use when creating a new entry (can be overridden per entry)
+	FileExtension string `yaml:"fileExtension,omitempty"`
 
 	// Entries is a list of entries
 	Entries []Entry `yaml:"entries"`

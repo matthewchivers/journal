@@ -8,24 +8,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
+type parameters struct {
 	entryID       string
 	directoryPath string
 	fileExt       string
 	fileName      string
 	topic         string
+}
+
+var (
+	params parameters
 )
 
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "create a new journal entry",
 	Run: func(_ *cobra.Command, _ []string) {
-		log.Debug().Dict("parameters", zerolog.Dict().
-			Str("entry_id", entryID).
-			Str("directory", directoryPath).
-			Str("extension", fileExt).
-			Str("filename", fileName).
-			Str("topic", topic)).
+		log.Debug().Dict("parameters",
+			zerolog.Dict().
+				Str("entry_id", params.entryID).
+				Str("directory", params.directoryPath).
+				Str("extension", params.fileExt).
+				Str("filename", params.fileName).
+				Str("topic", params.topic),
+		).
 			Str("command", "create").
 			Msg("creating new journal entry with the 'create' command")
 		if err := app.PreparePatternData(); err != nil {
@@ -59,23 +65,23 @@ var createCmd = &cobra.Command{
 }
 
 func init() {
-	createCmd.PersistentFlags().StringVar(&entryID, "id", "", "entry ID to use for templating")
-	createCmd.PersistentFlags().StringVar(&directoryPath, "directory", "", "directory to create the file in")
-	createCmd.PersistentFlags().StringVar(&fileExt, "extension", "", "file extension to use")
-	createCmd.PersistentFlags().StringVar(&fileName, "filename", "", "file name to use")
-	createCmd.PersistentFlags().StringVar(&topic, "topic", "", "topic to use for templating")
+	createCmd.PersistentFlags().StringVar(&params.entryID, "id", "", "entry ID to use for templating")
+	createCmd.PersistentFlags().StringVar(&params.directoryPath, "directory", "", "directory to create the file in")
+	createCmd.PersistentFlags().StringVar(&params.fileExt, "extension", "", "file extension to use")
+	createCmd.PersistentFlags().StringVar(&params.fileName, "filename", "", "file name to use")
+	createCmd.PersistentFlags().StringVar(&params.topic, "topic", "", "topic to use for templating")
 	rootCmd.AddCommand(createCmd)
 }
 
 // setTemplateDependencies sets the values for the template dependencies
 func setTemplateDependencies() error {
-	if err := app.SetEntryID(entryID); err != nil {
+	if err := app.SetEntryID(params.entryID); err != nil {
 		return err
 	}
-	if err := app.SetTopic(topic); err != nil {
+	if err := app.SetTopic(params.topic); err != nil {
 		return err
 	}
-	if err := app.SetFileExt(fileExt); err != nil {
+	if err := app.SetFileExt(params.fileExt); err != nil {
 		return err
 	}
 	return nil
@@ -83,10 +89,10 @@ func setTemplateDependencies() error {
 
 // setTemplatedValues sets the values for the templated values
 func setTemplatedValues() error {
-	if err := app.SetFileName(fileName); err != nil {
+	if err := app.SetFileName(params.fileName); err != nil {
 		return err
 	}
-	if err := app.SetDirectory(directoryPath); err != nil {
+	if err := app.SetDirectory(params.directoryPath); err != nil {
 		return err
 	}
 	return nil

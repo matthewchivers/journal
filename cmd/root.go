@@ -18,7 +18,6 @@ var (
 	logLevelDebug bool
 	logJSON       bool
 	app           *application.App
-	log           *zerolog.Logger
 )
 
 var rootCmd = &cobra.Command{
@@ -31,10 +30,10 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		log.Debug().Dict("flags", zerolog.Dict().
+		logger.Log.Debug().Dict("flags", zerolog.Dict()).
 			Bool("json", logJSON).
 			Bool("info", logLevelInfo).
-			Bool("debug", logLevelDebug)).
+			Bool("debug", logLevelDebug).
 			Dict("parameters", zerolog.Dict().
 				Str("config_path", cfgPath).
 				Str("log_path", loggingPath)).
@@ -42,16 +41,16 @@ var rootCmd = &cobra.Command{
 
 		app, err = application.NewApp()
 		if err != nil {
-			log.Err(err).Msg("error creating application context store")
+			logger.Log.Err(err).Msg("error creating application context store")
 			os.Exit(1)
 		}
 
 		app.SetLaunchTime(time.Now())
 		if err := loadConfig(); err != nil {
-			log.Err(err).Msg("error loading config")
+			logger.Log.Err(err).Msg("error loading config")
 			os.Exit(1)
 		}
-		log.Info().Msg("configuration loaded")
+		logger.Log.Info().Msg("configuration loaded")
 	},
 	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Println("welcome to journal cli: use 'journal --help' to see available commands")

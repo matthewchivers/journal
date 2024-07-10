@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/matthewchivers/journal/pkg/fileops"
+	"github.com/matthewchivers/journal/pkg/logger"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 )
@@ -51,24 +52,24 @@ func init() {
 func createRun(_ *cobra.Command, _ []string) {
 	filePath, err := app.GetFilePath()
 	if err != nil {
-		log.Err(err).Msg("error getting file path")
+		logger.Log.Err(err).Msg("error getting file path")
 		os.Exit(1)
 	}
-	log.Info().Str("file_path", filePath).
+	logger.Log.Info().Str("file_path", filePath).
 		Str("entry_id", app.EntryID).
 		Msg("creating new journal entry")
 	if err := fileops.CreateNewFile(filePath); err != nil {
-		log.Err(err).Msg("error creating file")
+		logger.Log.Err(err).Msg("error creating file")
 		os.Exit(1)
 	}
 	editor, err := app.GetEditor()
 	if err != nil {
-		log.Err(err).Msg("error getting editor")
+		logger.Log.Err(err).Msg("error getting editor")
 		os.Exit(1)
 	}
 	if !flags.noOpen {
 		if err := editor.OpenFile(filePath); err != nil {
-			log.Err(err).Msg("error opening file in editor")
+			logger.Log.Err(err).Msg("error opening file in editor")
 			os.Exit(1)
 		}
 	}
@@ -78,7 +79,7 @@ func createRun(_ *cobra.Command, _ []string) {
 // createPreRun is the pre-run function for the create command
 // It logs the parameters and prepares the pattern/template data
 func createPreRun(_ *cobra.Command, _ []string) {
-	log.Debug().Dict("parameters",
+	logger.Log.Debug().Dict("parameters",
 		zerolog.Dict().
 			Str("entry_id", params.entryID).
 			Str("directory_path", params.directoryPath).
@@ -93,12 +94,12 @@ func createPreRun(_ *cobra.Command, _ []string) {
 		Msg("creating new journal entry with the 'create' command")
 
 	if err := app.PreparePatternData(); err != nil {
-		log.Err(err).Msg("error preparing pattern data")
+		logger.Log.Err(err).Msg("error preparing pattern data")
 		os.Exit(1)
 	}
 
 	if err := initialiseAppValues(); err != nil {
-		log.Err(err).Msg("error setting template dependencies")
+		logger.Log.Err(err).Msg("error setting template dependencies")
 		os.Exit(1)
 	}
 }

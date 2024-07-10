@@ -18,8 +18,8 @@ func TestValidate(t *testing.T) {
 					Paths: Paths{},
 					Entries: []Entry{
 						{
-							ID:      "foo",
-							FileExt: "md",
+							ID:            "foo",
+							FileExtension: "md",
 						},
 					},
 				},
@@ -46,7 +46,7 @@ func TestValidate(t *testing.T) {
 					},
 					Entries: []Entry{
 						{
-							FileExt: "md",
+							FileExtension: "md",
 						},
 					},
 				},
@@ -78,8 +78,8 @@ func TestValidate(t *testing.T) {
 					},
 					Entries: []Entry{
 						{
-							ID:      "foo",
-							FileExt: "md",
+							ID:            "foo",
+							FileExtension: "md",
 						},
 					},
 				},

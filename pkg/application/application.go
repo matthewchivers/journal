@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/matthewchivers/journal/pkg/config"
+	"github.com/matthewchivers/journal/pkg/editor"
 	"github.com/matthewchivers/journal/pkg/logger"
 	"github.com/matthewchivers/journal/pkg/paths"
 	"github.com/matthewchivers/journal/pkg/templating"
@@ -29,8 +30,11 @@ type App struct {
 	// EntryID is the ID of the entry
 	EntryID string
 
-	// Directory is the directory in which to create the entry
-	Directory string
+	// BaseDirectory is the base directory for the entry
+	BaseDirectory string
+
+	// EntryDirectory is the directory in which to create the entry
+	EntryDirectory string
 
 	// FileName is the name of the file to create
 	FileName string
@@ -43,6 +47,12 @@ type App struct {
 
 	// targetEntry is the targetEntry configuration (used for convenience)
 	targetEntry *config.Entry
+
+	// Editor is the ID of the editor to use
+	Editor string
+
+	// targetEditor is the editor to use
+	targetEditor editor.Editor
 }
 
 // NewApp creates a new context instance
@@ -121,17 +131,34 @@ func (app *App) SetEntryID(entryID string) error {
 	return nil
 }
 
-// SetDirectory sets the directory for the entry
+// SetEntryDirectory sets the directory for the entry
 // If dir is empty, the directory is calculated from the entry configuration
-func (app *App) SetDirectory(dir string) error {
+func (app *App) SetEntryDirectory(dir string) error {
 	if dir == "" {
 		entryPath, err := app.CalculateEntryDir()
 		if err != nil {
 			return err
 		}
-		app.Directory = entryPath
+		app.EntryDirectory = entryPath
 	} else {
-		app.Directory = dir
+		app.EntryDirectory = dir
+	}
+	return nil
+}
+
+// SetBaseDirectory sets the base directory for the entry
+// If baseDir is empty, the default base directory is used
+func (app *App) SetBaseDirectory(baseDir string) error {
+	if baseDir != "" {
+		app.BaseDirectory = baseDir
+		return nil
+	}
+	if app.targetEntry == nil {
+		return errors.New("entry must be set before setting base directory")
+	}
+	app.BaseDirectory = app.Config.Paths.BaseDirectory
+	if app.targetEntry.BaseDirectory != "" {
+		app.BaseDirectory = app.targetEntry.BaseDirectory
 	}
 	return nil
 }
@@ -171,9 +198,10 @@ func (app *App) CalculateEntryDir() (string, error) {
 		return "", err
 	}
 
-	baseDirectory := app.Config.Paths.BaseDirectory
-	if entry.BaseDirectory != "" {
-		baseDirectory = entry.BaseDirectory
+	if app.BaseDirectory == "" {
+		err := errors.New("base directory must be set before getting entry directory")
+		log.Err(err).Msg("")
+		return "", err
 	}
 
 	entryDirectory, err := app.TemplateData.ParsePattern(entry.DirectoryPattern)
@@ -181,7 +209,7 @@ func (app *App) CalculateEntryDir() (string, error) {
 		return "", fmt.Errorf("failed to construct nested path: %w", err)
 	}
 
-	fullDirectory := filepath.Join(baseDirectory, entryDirectory)
+	fullDirectory := filepath.Join(app.BaseDirectory, entryDirectory)
 
 	log.Debug().Str("base_dir", app.Config.Paths.BaseDirectory).
 		Str("entry_dir_pattern", entry.DirectoryPattern).
@@ -190,6 +218,44 @@ func (app *App) CalculateEntryDir() (string, error) {
 		Msg("entry directory calculation (basedir/journaldir/entrydir)")
 
 	return fullDirectory, nil
+}
+
+// SetEditor sets the editor ID for the entry
+// If editor is empty, the default editor is used
+func (app *App) SetEditor(editorID string) error {
+	if app.targetEntry == nil {
+		return errors.New("entry must be set before setting editor ID")
+	}
+	if editorID != "" {
+		app.Editor = editorID
+	}
+	app.Editor = app.Config.Editor
+	if app.targetEntry.Editor != "" {
+		app.Editor = app.targetEntry.Editor
+	}
+
+	switch app.Editor {
+	case "":
+		return errors.New("editor not set")
+	case "vscode":
+		vscEditor, err := editor.NewVSCodeEditor()
+		if err != nil {
+			return err
+		}
+		app.targetEditor = vscEditor
+	default:
+		return errors.New("editor not supported")
+	}
+
+	return nil
+}
+
+// GetEditor returns the editor for the entry
+func (app *App) GetEditor() (editor.Editor, error) {
+	if app.targetEditor == nil {
+		return nil, errors.New("editor must be set before getting editor")
+	}
+	return app.targetEditor, nil
 }
 
 // GetEntryFileName returns the file name for the entry
@@ -225,14 +291,14 @@ func (app *App) GetFilePath() (string, error) {
 	if app.FilePath != "" {
 		return app.FilePath, nil
 	}
-	if app.Directory == "" {
+	if app.EntryDirectory == "" {
 		return "", errors.New("directory must be set before getting file path")
 	}
 	if app.FileName == "" {
 		return "", errors.New("file name must be set before getting file path")
 	}
-	app.FilePath = filepath.Join(app.Directory, app.FileName)
-	log.Debug().Str("directory", app.Directory).
+	app.FilePath = filepath.Join(app.EntryDirectory, app.FileName)
+	log.Debug().Str("directory", app.EntryDirectory).
 		Str("file_name", app.FileName).
 		Str("file_path", app.FilePath).
 		Msg("file path calculated from directory and file name")
@@ -254,24 +320,24 @@ func (app *App) PreparePatternData() error {
 	return nil
 }
 
-// SetFileExt sets the file extension for the entry
+// SetFileExtension sets the file extension for the entry
 // If fileExt is empty, the file extension is calculated from the configuration
 // (entry, or default if entry does not specify an extension)
-func (app *App) SetFileExt(fileExt string) error {
+func (app *App) SetFileExtension(fileExt string) error {
 	if app.TemplateData == nil {
 		return errors.New("template data must be initialised before setting file extension")
 	}
 	if fileExt != "" {
-		app.TemplateData.FileExt = fileExt
+		app.TemplateData.FileExtension = fileExt
 	} else {
 		entry, err := app.GetTargetEntry()
 		if err != nil {
 			return err
 		}
-		if entry.FileExt != "" {
-			app.TemplateData.FileExt = entry.FileExt
+		if entry.FileExtension != "" {
+			app.TemplateData.FileExtension = entry.FileExtension
 		} else {
-			app.TemplateData.FileExt = app.Config.FileExt
+			app.TemplateData.FileExtension = app.Config.FileExtension
 		}
 	}
 	return nil

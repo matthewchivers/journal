@@ -11,14 +11,15 @@ import (
 type cliParameters struct {
 	entryID       string
 	directoryPath string
+	baseDirectory string
 	fileExtension string
 	fileName      string
 	topic         string
-	editorID      string
+	editor        string
 }
 
 type cliFlags struct {
-	openFile bool
+	noOpen bool
 }
 
 var (
@@ -36,11 +37,12 @@ var createCmd = &cobra.Command{
 func init() {
 	createCmd.PersistentFlags().StringVar(&params.entryID, "id", "", "entry ID to use for templating")
 	createCmd.PersistentFlags().StringVar(&params.directoryPath, "directory", "", "directory to create the file in")
+	createCmd.PersistentFlags().StringVar(&params.baseDirectory, "base", "", "base directory to use")
 	createCmd.PersistentFlags().StringVar(&params.fileExtension, "extension", "", "file extension to use")
 	createCmd.PersistentFlags().StringVar(&params.fileName, "filename", "", "file name to use")
 	createCmd.PersistentFlags().StringVar(&params.topic, "topic", "", "topic to use for templating")
-	createCmd.PersistentFlags().StringVar(&params.editorID, "editor", "", "editor to use for editing the file")
-	createCmd.PersistentFlags().BoolVar(&flags.openFile, "open", false, "after creation - open the file in the editor")
+	createCmd.PersistentFlags().StringVar(&params.editor, "editor", "", "editor to use for editing the file")
+	createCmd.PersistentFlags().BoolVar(&flags.noOpen, "no-open", false, "do not open the file in the editor after creation")
 	rootCmd.AddCommand(createCmd)
 }
 
@@ -59,6 +61,18 @@ func createRun(_ *cobra.Command, _ []string) {
 		log.Err(err).Msg("error creating file")
 		os.Exit(1)
 	}
+	editor, err := app.GetEditor()
+	if err != nil {
+		log.Err(err).Msg("error getting editor")
+		os.Exit(1)
+	}
+	if !flags.noOpen {
+		if err := editor.OpenFile(filePath); err != nil {
+			log.Err(err).Msg("error opening file in editor")
+			os.Exit(1)
+		}
+	}
+
 }
 
 // createPreRun is the pre-run function for the create command
@@ -80,38 +94,37 @@ func createPreRun(_ *cobra.Command, _ []string) {
 		os.Exit(1)
 	}
 
-	if err := setTemplateDependencies(); err != nil {
+	if err := initialiseAppValues(); err != nil {
 		log.Err(err).Msg("error setting template dependencies")
 		os.Exit(1)
 	}
-
-	if err := setTemplatedValues(); err != nil {
-		log.Err(err).Msg("error setting templated values")
-		os.Exit(1)
-	}
-
 }
 
-// setTemplateDependencies sets the values for the template dependencies
-func setTemplateDependencies() error {
+// initialiseAppValues sets the values for the template dependencies
+func initialiseAppValues() error {
 	if err := app.SetEntryID(params.entryID); err != nil {
 		return err
 	}
 	if err := app.SetTopic(params.topic); err != nil {
 		return err
 	}
-	if err := app.SetFileExt(params.fileExtension); err != nil {
+	if err := app.SetFileExtension(params.fileExtension); err != nil {
 		return err
 	}
-	return nil
-}
+	if err := app.SetBaseDirectory(params.baseDirectory); err != nil {
+		return err
+	}
 
-// setTemplatedValues sets the values for the templated values
-func setTemplatedValues() error {
+	// FileName and EntryDirectory depend on other values being set - call them last
 	if err := app.SetFileName(params.fileName); err != nil {
 		return err
 	}
-	if err := app.SetDirectory(params.directoryPath); err != nil {
+	if err := app.SetEntryDirectory(params.directoryPath); err != nil {
+		return err
+	}
+
+	// Editor relies on all paths being set
+	if err := app.SetEditor(params.editor); err != nil {
 		return err
 	}
 	return nil
